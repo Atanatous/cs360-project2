@@ -4,7 +4,7 @@ USE cs360_team10;
 CREATE USER IF NOT EXISTS 'tester'@'localhost' IDENTIFIED BY '1234';
 GRANT ALL PRIVILEGES ON cs360_team10.* TO 'tester'@'localhost';
 
-ALTER DATABASE cs360_team10 DEFAULT CHARACTER SET utf8;
+ALTER DATABASE cs360_team10 DEFAULT CHARACTER SET euckr;
 
 CREATE TABLE IF NOT EXISTS TRAINER (
     uid         MEDIUMINT   NOT NULL AUTO_INCREMENT,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS POKEMON (
     name        VARCHAR(20) NOT NULL,
     first_type  VARCHAR(20) NOT NULL,
     second_type VARCHAR(20),
-    img_path    VARCHAR(20),
+    img_path    VARCHAR(100),
     PRIMARY KEY (poke_no)
 );
 

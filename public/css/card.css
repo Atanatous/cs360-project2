@@ -2,20 +2,24 @@
     box-sizing: border-box;
 }
 
-.galleryContainer {
+.cardContainer {
     margin-top:100px;
 }
 
-div.gallery {
-    margin: 0 15px;
+.poke_no {
+    text-align: center;
+}
+
+div.card {
+    margin: 15px 15px;
     border: 1px solid #ccc;
 }
 
-div.gallery:hover {
+div.card:hover {
     border: 1px solid #777;
 }
 
-div.gallery img {
+div.card img {
     width: 100%;
     height: auto;
 }
@@ -31,7 +35,7 @@ div.desc {
     width: 24.99999%;
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 900px) {
     .responsive {
         width: 49.99999%;
         margin: 6px 0;

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title> CS360 Team#10 </title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/card.css">
+</head>
+
+<body>
+    <header>
+        <div class="wrapper">
+            <a href="#"><img src="res/logo.png" width="150"></a>
+            <nav>
+                <ul class="menu">
+                    <li><a href="#"> 도감 </a></li>
+                    <li><a href="#"> 탐험 </a></li>
+                    <li><a href="#"> 상점 </a></li>
+                    <li><a href="#"> 로그인 </a></li>
+                </ul>
+            </nav>
+       </div>
+    </header>
+
+    <div class="cardContainer">
+        <ul>
+            <% for (var i=0; i < length; i++) { %>
+                <li>
+                    <div class="responsive">
+                        <div class="card">
+                        <div class="poke_no"> No. <h2> <%= data[i]['poke_no'] %> </h2> </div> 
+                            <a target="_blank" href= <%= data[i]['img_path']%>> </a>
+                            <img src= <%= data[i]['img_path'] %> width="600" height="400">
+                            <div class="desc"> <%= data[i]['name'] %></div>
+                        </div>
+                    </div>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+              
+</body>
+
+
+</html>

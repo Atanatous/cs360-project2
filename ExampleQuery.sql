@@ -1,3 +1,6 @@
 USE cs360_team10;
 
-INSER
+LOAD DATA LOCAL INFILE "C:/Users/chldl/OneDrive/Workspace/NodeJS/DBProject/PokeDB.csv"
+INTO TABLE POKEMON
+IGNORE 1 LINES
+FIELDS TERMINATED BY ",";

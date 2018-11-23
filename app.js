@@ -15,6 +15,11 @@ var connection = mysql.createConnection({
 
 connection.connect(); // Connection to MySQL
 
+// setting to template engine as 'ejs'
+app.set ('views', __dirname + '/views');
+app.set ('view engine', 'ejs');
+app.engine ('html', require('ejs').renderFile);
+
 app.use('/', express.static(__dirname + '/public')); // you may put public js, css, html files if you want...
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended : true }));
@@ -26,6 +31,14 @@ app.listen(3000, function () {
 
 // base url action: "http://localhost/" -> send "index.html" file.
 app.get('/', function (req, res) {
-	res.sendFile(__dirname + "/index.html");
+    var query = connection.query ('select * from pokemon', function (err, rows) {
+        if (err) { console.error (err); throw err; }
+        
+        res.render ('index', {
+            data: rows,
+            length: rows.length
+        });
+    });
+
 });
 
