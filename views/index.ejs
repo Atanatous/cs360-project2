@@ -22,16 +22,125 @@
        </div>
     </header>
 
-    <div class="cardContainer">
+    <div class="search-box">
+        <input type="text" placeholder="포켓몬 이름 및 설명, 특성 검색">
+        <button> 검색 </button>
+    </div>
+
+    <div class="card-container">
         <ul>
             <% for (var i=0; i < length; i++) { %>
                 <li>
                     <div class="responsive">
                         <div class="card">
-                        <div class="poke_no"> No. <h2> <%= data[i]['poke_no'] %> </h2> </div> 
-                            <a target="_blank" href= <%= data[i]['img_path']%>> </a>
-                            <img src= <%= data[i]['img_path'] %> width="600" height="400">
+                            <div class="poke_no">
+                                <% var poke_no, modified; %>
+                                <% poke_no = data[i]['poke_no']; %>
+                                <% if (poke_no < 10) { %>
+                                    <% poke_no = "00" + String(poke_no); %>
+                                <% } else if (poke_no < 100) { %>
+                                    <% poke_no = "0" + String(poke_no); %>
+                                <% } %>
+                                No. <h2> <%= poke_no %> </h2> 
+                            </div> 
+                            
+                            <div class="img-container">
+                                <img src= <%= data[i]['img_path'] %>>
+                            </div>
+
                             <div class="desc"> <%= data[i]['name'] %></div>
+                            <div class="type-container">
+                                <% var type1, type2, container1, container2; %>
+                                <% type1 = data[i]["first_type"]; %>
+                                <% type2 = data[i]["second_type"]; %>
+                                <% container1 = container2 = "type "; %>
+                                
+                                <% if (type1 == "풀") { %>
+                                    <% container1 = container1 + "type-grass"; %>                    
+                                <% } else if (type1 == "독") { %>
+                                    <% container1 = container1 + "type-posion"; %>
+                                <% } else if (type1 == "불꽃") { %>
+                                    <% container1 = container1 + "type-fire"; %>
+                                <% } else if (type1 == "물") { %>
+                                    <% container1 = container1 + "type-water"; %>
+                                <% } else if (type1 == "비행") { %>
+                                    <% container1 = container1 + "type-flight"; %>
+                                <% } else if (type1 == "벌레") { %>
+                                    <% container1 = container1 + "type-worm"; %>                                
+                                <% } else if (type1 == "노말") { %>
+                                    <% container1 = container1 + "type-normal"; %>
+                                <% } else if (type1 == "전기") { %>
+                                    <% container1 = container1 + "type-electric"; %>
+                                <% } else if (type1 == "페어리") { %>
+                                    <% container1 = container1 + "type-fairy"; %>
+                                <% } else if (type1 == "격투") { %>
+                                    <% container1 = container1 + "type-fight"; %>
+                                <% } else if (type1 == "에스퍼") { %>
+                                    <% container1 = container1 + "type-espher"; %>
+                                <% } else if (type1 == "바위") { %>
+                                    <% container1 = container1 + "type-rock"; %>
+                                <% } else if (type1 == "고스트") { %>
+                                    <% container1 = container1 + "type-ghost"; %>
+                                <% } else if (type1 == "땅") { %>
+                                    <% container1 = container1 + "type-ground"; %>
+                                <% } else if (type1 == "악") { %>
+                                    <% container1 = container1 + "type-evil"; %>
+                                <% } else if (type1 == "강철") { %>
+                                    <% container1 = container1 + "type-steel"; %>
+                                <% } else if (type1 == "얼음") { %>
+                                    <% container1 = container1 + "type-ice"; %>
+                                <% } else if (type1 == "드래곤") { %>   
+                                    <% container1 = container1 + "type-dragon"; %>
+                                <% } %>
+
+                                <div class= "<%= container1 %>">
+                                    <%= type1 %>
+                                </div>
+                                
+                                <% if (type2 == "풀") { %>
+                                    <% container2 = container2 + "type-grass"; %>                    
+                                <% } else if (type2 == "독") { %>
+                                    <% container2 = container2 + "type-posion"; %>
+                                <% } else if (type2 == "불꽃") { %>
+                                    <% container2 = container2 + "type-fire"; %>
+                                <% } else if (type2 == "물") { %>
+                                    <% container2 = container2 + "type-water"; %>
+                                <% } else if (type2 == "비행") { %>
+                                    <% container2 = container2 + "type-flight"; %>
+                                <% } else if (type2 == "벌레") { %>
+                                    <% container2 = container2 + "type-worm"; %>                                
+                                <% } else if (type2 == "노말") { %>
+                                    <% container2 = container2 + "type-normal"; %>
+                                <% } else if (type2 == "전기") { %>
+                                    <% container2 = container2 + "type-electric"; %>
+                                <% } else if (type2 == "페어리") { %>
+                                    <% container2 = container2 + "type-fairy"; %>
+                                <% } else if (type2 == "격투") { %>
+                                    <% container2 = container2 + "type-fight"; %>
+                                <% } else if (type2 == "에스퍼") { %>
+                                    <% container2 = container2 + "type-espher"; %>
+                                <% } else if (type2 == "바위") { %>
+                                    <% container2 = container2 + "type-rock"; %>
+                                <% } else if (type2 == "고스트") { %>
+                                    <% container2 = container2 + "type-ghost"; %>
+                                <% } else if (type2 == "땅") { %>
+                                    <% container2 = container2 + "type-ground"; %>
+                                <% } else if (type2 == "악") { %>
+                                    <% container2 = container2 + "type-evil"; %>
+                                <% } else if (type2 == "강철") { %>
+                                    <% container2 = container2 + "type-steel"; %>
+                                <% } else if (type2 == "얼음") { %>
+                                    <% container2 = container2 + "type-ice"; %>
+                                <% } else if (type2 == "드래곤") { %>
+                                    <% container2 = container2 + "type-dragon"; %>
+                                <% } %>
+
+                                <% if (type2 != "") { %>
+                                    <div class ="<%= container2 %>">
+                                        <%= type2 %>
+                                    </div>
+                                <% } %>
+                            </div>
                         </div>
                     </div>
                 </li>

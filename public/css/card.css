@@ -2,33 +2,191 @@
     box-sizing: border-box;
 }
 
-.cardContainer {
-    margin-top:100px;
+.search-box {
+    width: 80%;
+    height: 30px;
+    text-align: center;
+    background: #fff;
+    margin-top: 120px;
+    margin-bottom: 30px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.poke_no {
-    text-align: center;
+.search-box input {
+    width: 85%;
+    height: 40px;
+    padding: 10px;
 }
+
+.search-box button {
+    width: 10%;
+    height: 40px;
+    background-color: #337ab7;
+    color: white;
+    border-radius: 6px;
+}
+
+.card-container {
+    padding-right: 10%;
+    padding-left: 10%;
+}
+
 
 div.card {
-    margin: 15px 15px;
-    border: 1px solid #ccc;
+    margin: 15px;
+    padding: 10px;
+    background-color: #eee;
+    border: 1px solid #ddd;
 }
 
 div.card:hover {
     border: 1px solid #777;
 }
 
-div.card img {
-    width: 100%;
-    height: auto;
-}
-
-div.desc {
-    padding: 15px;
+.poke_no {
+    margin: 20px 0;
     text-align: center;
 }
 
+.poke_no h2 {
+    font-size: 30px;
+    display: inline;
+}
+
+.img-container {
+    height: auto;
+    padding: 25px;
+}
+
+div.card img {
+    max-width: 100%;
+}
+
+div.desc {
+    padding: 5px;
+    background-color: rgb(180, 180, 180);
+    color: white;
+    font-size: 25px;
+    text-align: center;
+}
+
+.type-container {
+    text-align: center;
+    margin: 15px;
+}
+
+.type-container div {
+    display: inline;
+}
+
+.type {
+    display: inline-block;
+    margin: 0 7px;
+    padding: 0 5px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    letter-spacing: .1px;
+    white-space: nowrap;
+    vertical-align: baseline;
+    font-size:15px;
+}
+
+.type-grass {
+    background-color: #78C850;
+    border-color: #66ab44;
+    color: #fff;
+}
+
+.type-posion {
+    background-color: #a040a0;
+    border-color: #843484;
+    color: #fff;
+}
+
+.type-fire {
+    background-color: #f08030;
+    border-color: #cd6b26;
+    color: #fff;
+}
+
+.type-water {
+    background-color: #00aeff;
+    border-color: #0088c7;
+    color: #fff;
+}
+
+.type-flight {
+    background-color: #a890f0;
+    border-color: #896ae8;
+    color: #fff;
+}
+
+.type-worm {
+    background-color: #a8b820;
+    border-color: #8e9b1b;
+    color: #fff;
+}
+
+.type-normal {
+    background-color: #a8a878;
+    border-color: #959569;
+    color: #fff;
+}
+
+.type-electric {
+    background-color: #f8d030;
+    border-color: #d6b429;
+    color: #fff;
+}
+
+.type-fairy {
+    background-color: #ee99ac;
+    border-color: #c96a7f;
+    color: #fff;
+}
+
+.type-fight {
+    background-color: #c03028;
+    border-color: #a32822;
+    color: #fff;
+}
+
+.type-espher {
+    background-color: #f85888;
+    border-color: #d74b75;
+    color: #fff;
+}
+
+.type-ground {
+    background-color: #bba038;
+    border-color: #9c882e;
+    color: #fff;
+}
+
+.type-evil {
+    background-color: #705848;
+    border-color: #503e33;
+    color: #fff;
+}
+
+.type-steel {
+    background-color: #b8b8d0;
+    border-color: #9595ad;
+    color: #fff;
+}
+
+.type-ice {
+    background-color: #98d8d8;
+    border-color: #7cb4b4;
+    color: #fff;
+}
+
+.type-dragon {
+    background-color: #7038f8;
+    border-color: #5f2cd4;
+    color: #fff;
+}
 .responsive {
     padding: 0 6px;
     float: left;
