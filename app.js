@@ -33,12 +33,23 @@ app.listen(3000, function () {
 app.get('/', function (req, res) {
     var query = connection.query ('select * from pokemon', function (err, rows) {
         if (err) { console.error (err); throw err; }
-        
         res.render ('index', {
             data: rows,
             length: rows.length
         });
     });
-
 });
+
+app.post ('/api/search', function (req, res) {
+    var queryState = 'select * from pokemon ';
+    queryState = queryState + 'where name like "%' + req.body.search_data + '%"';
+    var query = connection.query (queryState, function (err, rows) {
+        if (err) { console.error (err); throw err; }
+        res.render ('index', {
+            data: rows,
+            length: rows.length
+        });
+    });
+});
+
 

@@ -27,11 +27,32 @@
     border-radius: 6px;
 }
 
+.type-category {
+    text-align: center;
+    padding: 10px;
+    width: 75%;
+    margin: 15px auto;
+}
+
+.type-category .type {
+    margin: 2px;
+    padding: 5px 10px;
+}
+
+.type-category .type:hover {
+    background-color: #286090;
+    border-color: #204d74;
+}
+
+.type-categroy .type:focus {
+    background-color: #286090;
+    border-color: #204d74;
+}
+
 .card-container {
     padding-right: 10%;
     padding-left: 10%;
 }
-
 
 div.card {
     margin: 15px;
@@ -80,6 +101,7 @@ div.desc {
     display: inline;
 }
 
+
 .type {
     display: inline-block;
     margin: 0 7px;
@@ -92,13 +114,14 @@ div.desc {
     font-size:15px;
 }
 
+
 .type-grass {
     background-color: #78C850;
     border-color: #66ab44;
     color: #fff;
 }
 
-.type-posion {
+.type-poison {
     background-color: #a040a0;
     border-color: #843484;
     color: #fff;
@@ -186,6 +209,18 @@ div.desc {
     background-color: #7038f8;
     border-color: #5f2cd4;
     color: #fff;
+}
+
+.type-ghost {
+    background-color: #705898;
+    border-color: #5b477c;
+    color: #fff;
+}
+
+.type-rock {
+    background-color: #b8a038;
+    border-color: #9c882e;
+    color: #fff
 }
 .responsive {
     padding: 0 6px;

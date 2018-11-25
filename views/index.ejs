@@ -3,14 +3,27 @@
 <head>
     <title> CS360 Team#10 </title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/card.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/card.css">
+
+    
+    <style type="text/css">
+        .bg_highlight { background: #f7f7f7; }
+    </style>
+
+    <script type="text/javascript">
+    $(function() {
+        $(".type-category .type").click(function() {
+            $(this).toggleClass("bg_highlight");
+        });
+    })
+    </script>
 </head>
 
 <body>
     <header>
         <div class="wrapper">
-            <a href="#"><img src="res/logo.png" width="150"></a>
+            <a href="/"><img src="/res/logo.png" width="150"></a>
             <nav>
                 <ul class="menu">
                     <li><a href="#"> 도감 </a></li>
@@ -23,8 +36,31 @@
     </header>
 
     <div class="search-box">
-        <input type="text" placeholder="포켓몬 이름 및 설명, 특성 검색">
-        <button> 검색 </button>
+        <form action="/api/search" method="post">
+            <input type="text" name="search_data" placeholder="포켓몬 이름 및 설명, 특성 검색">
+            <button type="submit"> 검색 </button>
+        </form>
+    </div>
+
+    <div class="type-category">
+        <button class="type type-normal"> 노말 </button>
+        <button class="type type-fire"> 불꽃 </button>
+        <button class="type type-water"> 물 </button>
+        <button class="type type-grass"> 풀 </button>
+        <button class="type type-electric"> 전기 </button>
+        <button class="type type-ice"> 얼음 </button>
+        <button class="type type-fight"> 격투 </button>
+        <button class="type type-poison"> 독 </button>
+        <button class="type type-ground"> 땅 </button>
+        <button class="type type-flight"> 비행 </button>
+        <button class="type type-espher"> 에스퍼 </button>
+        <button class="type type-worm"> 벌레 </button>
+        <button class="type type-rock"> 바위 </button>
+        <button class="type type-ghost"> 고스트 </button>
+        <button class="type type-dragon"> 드래곤 </button>
+        <button class="type type-evil"> 악 </button>
+        <button class="type type-steel"> 강철 </button>
+        <button class="type type-fairy"> 페어리 </button>
     </div>
 
     <div class="card-container">
@@ -58,7 +94,7 @@
                                 <% if (type1 == "풀") { %>
                                     <% container1 = container1 + "type-grass"; %>                    
                                 <% } else if (type1 == "독") { %>
-                                    <% container1 = container1 + "type-posion"; %>
+                                    <% container1 = container1 + "type-poison"; %>
                                 <% } else if (type1 == "불꽃") { %>
                                     <% container1 = container1 + "type-fire"; %>
                                 <% } else if (type1 == "물") { %>
@@ -100,7 +136,7 @@
                                 <% if (type2 == "풀") { %>
                                     <% container2 = container2 + "type-grass"; %>                    
                                 <% } else if (type2 == "독") { %>
-                                    <% container2 = container2 + "type-posion"; %>
+                                    <% container2 = container2 + "type-poison"; %>
                                 <% } else if (type2 == "불꽃") { %>
                                     <% container2 = container2 + "type-fire"; %>
                                 <% } else if (type2 == "물") { %>
