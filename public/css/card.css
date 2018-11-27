@@ -55,8 +55,10 @@
 }
 
 div.card {
-    margin: 15px;
+    margin: 5% 2.5%;
     padding: 10px;
+    line-height: 50%;
+    border-radius: 5px;
     background-color: #eee;
     border: 1px solid #ddd;
 }
@@ -66,30 +68,62 @@ div.card:hover {
 }
 
 .poke_no {
-    margin: 20px 0;
+    margin-top: 20px;
     text-align: center;
 }
 
 .poke_no h2 {
-    font-size: 30px;
+    font-size: 25px;
     display: inline;
 }
 
 .img-container {
-    height: auto;
-    padding: 25px;
+    padding: 15%;
 }
 
-div.card img {
+.card img {
     max-width: 100%;
 }
 
-div.desc {
-    padding: 5px;
-    background-color: rgb(180, 180, 180);
+
+.desc {
+    padding: 5%;
     color: white;
-    font-size: 25px;
     text-align: center;
+}
+
+.desc .name {
+    padding: 5%;
+    background-color: rgb(180, 180, 180);
+    font-size: 25px;
+    line-height: 1;
+}
+
+.desc .prop {
+    padding: 5px;
+    background-color: black;
+    font-size: 13px;
+    line-height: 1;
+}
+
+.category {
+    text-align: center;
+    color: #777;
+    font-size: 15px;
+    line-height: 26px;
+}
+
+.info-container {
+    text-align: center;
+    display: block;
+    background-color: white;
+    font-size: 14px;
+    line-height:1.4;
+    padding: 5px;
+}
+
+.section {
+    display: inline-block;
 }
 
 .type-container {

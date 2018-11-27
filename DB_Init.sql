@@ -21,6 +21,11 @@ CREATE TABLE IF NOT EXISTS POKEMON (
     first_type  VARCHAR(20) NOT NULL,
     second_type VARCHAR(20),
     img_path    VARCHAR(100),
+    height      VARCHAR(20),
+    weight      VARCHAR(20),
+    category    VARCHAR(20),
+    prop1       VARCHAR(20),
+    prop2       VARCHAR(20),
     PRIMARY KEY (poke_no)
 );
 

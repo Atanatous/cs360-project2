@@ -84,7 +84,21 @@
                                 <img src= <%= data[i]['img_path'] %>>
                             </div>
 
-                            <div class="desc"> <%= data[i]['name'] %></div>
+                            <div class="desc">
+                                <div class="name"> <%= data[i]['name'] %> </div>
+                                <div class="prop"> 
+                                    <% var prop = data[i]['prop1']; %>
+                                    <% if (data[i]['prop2'] != null) { %>
+                                        <% prop = prop + " / " + data[i]['prop2'] %>
+                                    <% } %>
+                                    <%= prop %>
+                                </div>
+                            </div>
+
+                            <div class="category">
+                                <%= data[i]['category'] %>
+                            </div>
+
                             <div class="type-container">
                                 <% var type1, type2, container1, container2; %>
                                 <% type1 = data[i]["first_type"]; %>
@@ -176,6 +190,17 @@
                                         <%= type2 %>
                                     </div>
                                 <% } %>
+                            </div>
+
+                            <div class="info-container">
+                                <div class="section">
+                                    <h3> 키 </h3>
+                                    <p> <%= data[i] ['height'] %> </p>
+                                </div>
+                                <div class="section">
+                                    <h3> 몸무게 </h3>
+                                    <p> <%= data[i]['weight'] %> </p>
+                                </div>
                             </div>
                         </div>
                     </div>

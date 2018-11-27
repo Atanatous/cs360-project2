@@ -42,7 +42,14 @@ app.get('/', function (req, res) {
 
 app.post ('/api/search', function (req, res) {
     var queryState = 'select * from pokemon ';
-    queryState = queryState + 'where name like "%' + req.body.search_data + '%"';
+    condition = '"%' + req.body.search_data + '%"';
+    queryState = queryState + 'where name like ' + condition;
+    queryState = queryState + ' or prop2 like ' + condition;
+    queryState = queryState + ' or prop1 like ' + condition;
+    queryState = queryState + ' or category like ' + condition;
+    queryState = queryState + ' or first_type like ' + condition;
+    queryState = queryState + ' or second_type like ' + condition;
+    
     var query = connection.query (queryState, function (err, rows) {
         if (err) { console.error (err); throw err; }
         res.render ('index', {
