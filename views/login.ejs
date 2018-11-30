@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title> CS360 Team#10 </title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+    <header>
+        <div class="wrapper">
+            <a href="/"><img src="/res/logo.png" width="150"></a>
+            <nav>
+                <ul class="menu">
+                    <li><a href="/"> 도감 </a></li>
+                    <li><a href="/"> 탐험 </a></li>
+                    <li><a href="/"> 상점 </a></li>
+                    <li>
+                        <% if (username) { %>
+                            <a href="/mypage"> <%= username %> </a>
+                        <% } else { %>
+                            <a href="/login"> 로그인 </a>
+                        <% } %>
+                    </li>
+                </ul>
+            </nav>
+       </div>
+    </header>
+
+    <div class="login-container">
+        <form action="/api/login" method="post">
+            <div class="header">
+                로그인
+            </div>
+            <div class = "row-container">
+                <div class="row">
+                    <div class="section"> 아이디 </div>
+                    <input type="text" name="id">   
+                </div>
+                <div class="row">
+                    <div class="section"> 비밀번호 </div>
+                    <input type="password" name="password">
+                </div>
+            </div>
+            <div class="footer">
+                <button id="register" type="button" onclick="location.href='/sign_up'" > 회원가입 </button>
+                <button id="login" input type="submit"> 로그인 </button>
+            </div>
+        </form>
+    </div>
+              
+</body>
+
+
+</html>

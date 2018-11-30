@@ -10,7 +10,7 @@
     <style type="text/css">
         .bg_highlight { background: #f7f7f7; }
     </style>
-
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
     $(function() {
         $(".type-category .type").click(function() {
@@ -26,10 +26,16 @@
             <a href="/"><img src="/res/logo.png" width="150"></a>
             <nav>
                 <ul class="menu">
-                    <li><a href="#"> 도감 </a></li>
-                    <li><a href="#"> 탐험 </a></li>
-                    <li><a href="#"> 상점 </a></li>
-                    <li><a href="#"> 로그인 </a></li>
+                    <li><a href="/"> 도감 </a></li>
+                    <li><a href="/"> 탐험 </a></li>
+                    <li><a href="/"> 상점 </a></li>
+                    <li>
+                        <% if (username) { %>
+                            <a href="/mypage"> <%= username %> </a>
+                        <% } else { %>
+                            <a href="/login"> 로그인 </a>
+                        <% } %>
+                    </li>
                 </ul>
             </nav>
        </div>
