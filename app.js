@@ -4,7 +4,12 @@ var app = express();
 var bodyParser = require('body-parser')
 var mysql = require('mysql'); // MySQL module on node.js
 
+// var server = require('http').createServer(app);
+// var io = require('socket.io')(server);
+
 var Cryptr = require('cryptr');
+var session = require('express-session');
+
 cryptr = new Cryptr('myTotalySecretKey');
 
 var connection = mysql.createConnection({
@@ -25,26 +30,39 @@ app.engine ('html', require('ejs').renderFile);
 app.use('/', express.static(__dirname + '/public')); // you may put public js, css, html files if you want...
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended : true }));
+app.use(session({
+  key: 'sid',
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 24000 * 60 * 60 // 쿠키 유효기간 24시간
+  }
+}));
 
 // "node app.js" running on port 3000
-app.listen(3000, function () {
+var server = app.listen(3000, function () {
 	console.log('Example app listening on port 3000!');
 });
 
+var io = require('socket.io')(server);
+
 // base url action: "http://localhost/" -> send "index.html" file.
 app.get('/', function (req, res) {
+    var sess = req.session;
     var query = connection.query ('select * from pokemon', function (err, rows) {
         if (err) { console.error (err); throw err; }
         res.render ('index', {
             data: rows,
-            length: rows.length
+            length: rows.length,
+            name : sess.name
         });
     });
 });
 
 app.get('/login', function (req, res) {
     console.log("login");
-    res.render ('status');
+    res.render ('login');
 });
 
 app.get('/register', function (req, res) {
@@ -74,11 +92,6 @@ app.post ('/api/search', function (req, res) {
 
 app.post('/api/register', function(req, res){
     var encryptedString = cryptr.encrypt(req.body.password);
-    var users={
-        "name":req.body.name,
-        "nickname":req.body.nickname,
-        "password":encryptedString
-    }
     var sql = "INSERT INTO TRAINER (user_id, user_pw, gold ,nickname) VALUES ?";
     var values = [
       [req.body.name, encryptedString, 0, req.body.nickname]
@@ -109,22 +122,116 @@ app.post('/api/login', function(req, res, next){
             decryptedString = cryptr.decrypt(results[0].user_pw);
             console.log(decryptedString);
             if(password==decryptedString){
+                console.log("Login Success, User name :" + name);
+                req.session.name = name;
                 res.redirect('/');
             }else{
-                res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
-                // res.redirect('/login');
+                // res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
+                res.redirect('/login', );
             }
           
         }
         else{
-          res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
-          // res.redirect('/login');
+          // res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
+          res.redirect('/login');
         }
       }
     });
 });
 
+app.get('/adverture', function(req, res){
+    var sess = req.session;
+    name = sess.name;
+    if(name){
+        connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
+            console.log("In adverture user's nickname :" + results[0].nickname);
+            sess.nickname = results[0].nickname;
+            // res.render('test');
+            res.render('adverture', {
+                nickname : sess.nickname,
+                name : sess.name
+            });
+        });    
+    }else{
+        res.redirect('/login');
+    }
+});
+
+
+
 
 app.post('/wrongAlert', function(req, res, next){
     res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
 });
+
+
+var playerList = {};
+
+io.on('connection', function(socket){
+  socket.on('nameCheck', function(name){
+    console.log("nameCheck IN");
+    //console.log(name);
+    function chkNameDuplicated(name){
+      for(var p in playerList)
+        if(playerList[p].name == name)
+          return true;
+      return false;
+    }
+    if(chkNameDuplicated(name)){
+      console.log("Name "+name+" duplicate");
+      socket.emit('loginFail', null);
+      return;
+    }
+    console.log("To loginSuccess server");
+    socket.emit('loginSuccess', name);
+  });
+
+  socket.on('login', function(data){
+    console.log("Client logged-in:\n name:"+data.name+"\n socket id: "+socket.id);
+
+    socket.name = data.name;
+    socket.broadcast.emit('anotherUser', data);
+
+    for(var socketid in playerList){
+      var playerData = playerList[socketid];
+      console.log("user already exists : "+playerData.name);
+      socket.emit('anotherUser', playerData);
+    }
+    playerList[socket.id] = data;
+  });
+
+  socket.on('move', function(data){
+    socket.broadcast.emit('move', data);
+  });
+
+  socket.on('chat', function (data) {
+    console.log('Messsage from '+ data.name+' : '+data.chat);
+    socket.broadcast.emit('chat', data);
+  });
+  socket.on('msg', function(data){
+    console.log('Message from '+ data.from + " to " + data.to +" "+ data.chat);
+    let flag = true;
+    for(var socketid in playerList){
+      var playerData = playerList[socketid];
+      if(playerData.name == data.to){
+        flag = false;
+        io.to(socketid).emit('msg', data);
+      }
+    }
+    if(flag){
+      socket.emit('noUser', data);
+      console.log('There is no '+ data.to);
+    }
+  });
+
+  socket.on('forceDisconnect', function () {
+    socket.disconnect();
+  });
+
+  socket.on('disconnect', function () {
+    console.log('user disconnected: '+socket.name);
+    delete playerList[socket.id];
+    io.emit('logout', socket.name);
+  });
+});
+
