@@ -29,13 +29,15 @@
                     <li><a href="/"> 도감 </a></li>
                     <li><a href="/"> 탐험 </a></li>
                     <li><a href="/"> 상점 </a></li>
-                    <li>
-                        <% if (username) { %>
-                            <a href="/mypage"> <%= username %> </a>
-                        <% } else { %>
-                            <a href="/login"> 로그인 </a>
-                        <% } %>
-                    </li>
+                    <li><a href="/login"> 
+                        <% if(name){ %> <%= name %> 
+                        <% }else{ %> 로그인 <% } %>             
+                    </a></li>
+                    <li><a href="/api/logout"> 
+                        <% if(name){ %> 로그아웃 <% }
+                        else{ %><% } %>             
+                    </a></li>
+                    
                 </ul>
             </nav>
        </div>
