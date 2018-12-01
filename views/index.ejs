@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/card.css">
-    
+
     
     <style type="text/css">
         .bg_highlight { background: #f7f7f7; }
@@ -27,12 +27,17 @@
             <nav>
                 <ul class="menu">
                     <li><a href="#"> 도감 </a></li>
-                    <li><a href="/adverture"> 탐험 </a></li>
+                    <li><a href="/adventure"> 탐험 </a></li>
                     <li><a href="#"> 상점 </a></li>
                     <li><a href="/login"> 
                         <% if(name){ %> <%= name %> 
                         <% }else{ %> 로그인 <% } %>             
                     </a></li>
+                    <li><a href="/api/logout"> 
+                        <% if(name){ %> 로그아웃 <% }
+                        else{ %><% } %>             
+                    </a></li>
+                    
                 </ul>
             </nav>
        </div>

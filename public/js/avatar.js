@@ -310,3 +310,8 @@ function Avatar(name, gender, skinTone, x, y, curFrame, dir, isSelf) {
     this.curFrame = data.curFrame;
   };
 }
+
+socket.on('testemit', function(data){
+  console.log("avatar");
+});
+

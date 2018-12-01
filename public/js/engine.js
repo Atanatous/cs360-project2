@@ -14,3 +14,8 @@ findCllsn = function(a, b) {
     }
   }
 };
+
+
+socket.on('testemit', function(data){
+  console.log("engine");
+});

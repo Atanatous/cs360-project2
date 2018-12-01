@@ -4,8 +4,8 @@ var app = express();
 var bodyParser = require('body-parser')
 var mysql = require('mysql'); // MySQL module on node.js
 
-// var server = require('http').createServer(app);
-// var io = require('socket.io')(server);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 
 var Cryptr = require('cryptr');
 var session = require('express-session');
@@ -28,6 +28,7 @@ app.set ('view engine', 'ejs');
 app.engine ('html', require('ejs').renderFile);
 
 app.use('/', express.static(__dirname + '/public')); // you may put public js, css, html files if you want...
+// app.use('/', express.static(__dirname + '/'));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended : true }));
 app.use(session({
@@ -41,11 +42,14 @@ app.use(session({
 }));
 
 // "node app.js" running on port 3000
-var server = app.listen(3000, function () {
-	console.log('Example app listening on port 3000!');
-});
+// app.listen(3000, function () {
+// 	console.log('Example app listening on port 3000!');
+// });
 
-var io = require('socket.io')(server);
+server.listen(3000, function () {
+    console.log('Example app listening on port 3000!');
+});
+// var io = require('socket.io')(server);
 
 // base url action: "http://localhost/" -> send "index.html" file.
 app.get('/', function (req, res) {
@@ -61,8 +65,23 @@ app.get('/', function (req, res) {
 });
 
 app.get('/login', function (req, res) {
-    console.log("login");
-    res.render ('login');
+    console.log("Welcome login");
+    var sess = req.session;
+    var name = sess.name;
+    console.log(name);
+    if(name){
+        res.render('mypage');
+    }else{
+        res.render ('login');    
+    }
+});
+
+app.get('/api/logout', function(req, res){
+    var sess = req.session;
+    console.log("Logout : " + sess.name);
+    sess.destroy(function(err){
+        res.redirect('/');
+    });
 });
 
 app.get('/register', function (req, res) {
@@ -139,15 +158,15 @@ app.post('/api/login', function(req, res, next){
     });
 });
 
-app.get('/adverture', function(req, res){
+app.get('/adventure', function(req, res){
     var sess = req.session;
     name = sess.name;
     if(name){
         connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
-            console.log("In adverture user's nickname :" + results[0].nickname);
+            console.log("In adventure user's nickname :" + results[0].nickname);
             sess.nickname = results[0].nickname;
             // res.render('test');
-            res.render('adverture', {
+            res.render('adventure', {
                 nickname : sess.nickname,
                 name : sess.name
             });
@@ -159,6 +178,34 @@ app.get('/adverture', function(req, res){
 
 
 
+app.post('/api/mypage', function(req,res){
+
+    // if(req.body.user_pw.length==0){
+    //     var sql = 'UPDATE TRAINER SET nickname=?, WHERE id=?';
+    //     // var encryptedString = cryptr.encrypt(req.body.password);
+    //     var params = [req.body.nickname];    
+    // }else{
+    //     var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE id=?';
+    //     var encryptedString = cryptr.encrypt(req.body.password);
+    //     var params = [req.body.nickname, encryptedString];    
+    // }
+    var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
+    var encryptedString = cryptr.encrypt(req.body.password);
+    var params = [req.body.nickname, encryptedString, req.session.name];
+
+    connection.query(sql, params, function(err, rows, fields){
+    if(err){
+        console.log(err);
+    } else {
+        console.log(rows);
+        req.session.destroy(function(err){
+            res.redirect('/');
+        });
+    }
+})
+});
+
+
 
 app.post('/wrongAlert', function(req, res, next){
     res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
@@ -168,9 +215,16 @@ app.post('/wrongAlert', function(req, res, next){
 var playerList = {};
 
 io.on('connection', function(socket){
+
+    // socket.on('test', function(name){
+    //     console.log("TEST SOCKET");
+    // });
+    console.log("EMIT TEST START");
+    socket.emit('testemit');
+    console.log("EMIT");
+
   socket.on('nameCheck', function(name){
     console.log("nameCheck IN");
-    //console.log(name);
     function chkNameDuplicated(name){
       for(var p in playerList)
         if(playerList[p].name == name)

@@ -37,6 +37,8 @@ function makeRandomName() {
 
 var socket = io();
 
+// socket.emit("test");
+
 socket.on("anotherUser", function(data){
   worldObjs.push(new Avatar(data.name, data.gender, data.skinTone, data.x,
   data.y, data.curFrame, data.dir, false));
@@ -439,7 +441,9 @@ socket.on('loginFail', function(){
   window.location.reload();
 });
 
+
 socket.on('loginSuccess', function(name) {
+  // console.log("HELLO");
   player = new Avatar(name, Mygender, randNum(0, 3), randNum(10, w-10), randNum(10, h-30),
   1, dir=2, isSelf=true);
   worldObjs[0] = player;
@@ -593,29 +597,36 @@ window.addEventListener("keydown", function(e) {
 }, false);
 
 var Randomname = makeRandomName();
-// console.log(Randomname);
-document.querySelector('#username').placeholder = Randomname;
-document.addEventListener('DOMContentLoaded',function(){
-  document.querySelector('#form').addEventListener("submit",function(e){
-    e.preventDefault();
-    var MyName = document.querySelector('#username').value;
-    if(MyName==""){
-      MyName = Randomname;
-    }
-    var lst = MyName.split(" ");
-    if(lst.length>1){
-      MyName="";
-      for (var index in lst){
-        MyName += lst[index];
-      }
-    }
-    var genderStr = document.querySelector('input[name="gender"]:checked').value;
-    if(genderStr == "m"){
-      Mygender = 0;
-    }else{
-      Mygender = 1;
-    }
-    socket.emit('nameCheck', MyName);
-    document.querySelector('#form').style.display="none";
-  });
-});
+// document.querySelector('#username').placeholder = Randomname;
+// document.addEventListener('DOMContentLoaded',function(){
+//   document.querySelector('#form').addEventListener("submit",function(e){
+//     e.preventDefault();
+//     var MyName = document.querySelector('#username').value;
+//     if(MyName==""){
+//       MyName = Randomname;
+//     }
+//     var lst = MyName.split(" ");
+//     if(lst.length>1){
+//       MyName="";
+//       for (var index in lst){
+//         MyName += lst[index];
+//       }
+//     }
+//     var genderStr = document.querySelector('input[name="gender"]:checked').value;
+//     if(genderStr == "m"){
+//       Mygender = 0;
+//     }else{
+//       Mygender = 1;
+//     }
+//     socket.emit('nameCheck', MyName);
+//     document.querySelector('#form').style.display="none";
+//   });
+// });
+// var this_js_script = $('script[src*=index]');
+// var nick_name = this_js_script.attr('nickname');
+socket.emit('nameCheck', Randomname);
+
+
+// socket.on('testemit', function(name){
+//   console.log("emit test success");
+// });
