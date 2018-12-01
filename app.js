@@ -73,7 +73,9 @@ app.get('/login', function (req, res) {
     var name = sess.name;
     console.log(name);
     if(name){
-        res.render('mypage');
+        res.render('mypage', {
+            name : name
+        });
     }else{
         res.render ('login');    
     }
@@ -88,9 +90,9 @@ app.get('/api/logout', function(req, res){
 });
 
 app.get('/register', function (req, res) {
-    console.log("register");
     res.render ('register');
 });
+
 
 
 app.post ('/api/search', function (req, res) {
@@ -169,6 +171,7 @@ app.get('/adventure', function(req, res){
         connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
             console.log("In adventure user's nickname :" + results[0].nickname);
             sess.nickname = results[0].nickname;
+
             // res.render('test');
             res.render('adventure', {
                 nickname : sess.nickname,
@@ -219,7 +222,7 @@ app.post('/wrongAlert', function(req, res, next){
 var playerList = {};
 
 io.on('connection', function(socket){
-
+    // var temp_socket = socket;
     // socket.on('test', function(name){
     //     console.log("TEST SOCKET");
     // });
@@ -293,3 +296,14 @@ io.on('connection', function(socket){
   });
 });
 
+app.get('/adventure/mypage', function(req, res){
+    res.redirect('/');
+});
+
+app.get('/adventure/return', function(req,res){
+    res.redirect('/');
+});
+
+app.get('/adventure/logout', function(req,res){
+    res.redirect('/api/logout');
+});

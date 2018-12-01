@@ -18,6 +18,7 @@
         });
     })
     </script>
+    <p id="nickname"> <%= nickname %> </p>
 </head>
 
 <body>
@@ -26,12 +27,16 @@
             <a href="/"><img src="/res/logo.png" width="150"></a>
             <nav>
                 <ul class="menu">
-                    <li><a href="#"> 도감 </a></li>
+                    <li><a href="/adventure/return"> 도감 </a></li>
                     <li><a href="/adventure"> 탐험 </a></li>
                     <li><a href="#"> 상점 </a></li>
-                    <li><a href="/login"> 
+                    <li><a href="/adventure/mypage"> 
                         <% if(name){ %> <%= name %> 
                         <% }else{ %> 로그인 <% } %>             
+                    </a></li>
+                    <li><a href="/adventure/logout"> 
+                        <% if(name){ %> 로그아웃 <% }
+                        else{ %><% } %>             
                     </a></li>
                 </ul>
             </nav>
@@ -41,7 +46,7 @@
   </body>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/avatar.js"></script>
-  <script src="/js/index.js"></script>
-  <script src="/js/engine.js"></script>
+  <script src="js/avatar.js"></script>
+  <script src="js/index.js"></script>
+  <script src="js/engine.js"></script>
 </html>

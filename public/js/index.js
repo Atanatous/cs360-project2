@@ -597,36 +597,7 @@ window.addEventListener("keydown", function(e) {
 }, false);
 
 var Randomname = makeRandomName();
-// document.querySelector('#username').placeholder = Randomname;
-// document.addEventListener('DOMContentLoaded',function(){
-//   document.querySelector('#form').addEventListener("submit",function(e){
-//     e.preventDefault();
-//     var MyName = document.querySelector('#username').value;
-//     if(MyName==""){
-//       MyName = Randomname;
-//     }
-//     var lst = MyName.split(" ");
-//     if(lst.length>1){
-//       MyName="";
-//       for (var index in lst){
-//         MyName += lst[index];
-//       }
-//     }
-//     var genderStr = document.querySelector('input[name="gender"]:checked').value;
-//     if(genderStr == "m"){
-//       Mygender = 0;
-//     }else{
-//       Mygender = 1;
-//     }
-//     socket.emit('nameCheck', MyName);
-//     document.querySelector('#form').style.display="none";
-//   });
-// });
-// var this_js_script = $('script[src*=index]');
-// var nick_name = this_js_script.attr('nickname');
-socket.emit('nameCheck', Randomname);
-
-
-// socket.on('testemit', function(name){
-//   console.log("emit test success");
-// });
+var nickname = document.getElementById('nickname');
+console.log(nickname.innerHTML)
+Mygender = 1;
+socket.emit('nameCheck', nickname.innerHTML);
