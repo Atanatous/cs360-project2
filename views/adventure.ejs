@@ -19,6 +19,8 @@
         });
     })
     </script>
+
+    
 </head>
 
 <body class="align">
@@ -51,36 +53,33 @@
     <div>
 
     <div class="background-adventure">
-        <img src="maps/dot_pokemap.png"></img>
+        <img id = "background" src="maps/dot_pokemap.png"></img>
     </div>
 
-    <div class="png-adventure">
-        <img onClick="javascript:location.href='/';" src="maps/고대유적.png"></img> 
-    </div>
-<!-- 
-    <div class="png-adventure">
-        <img onClick="javascript:location.href='/';" src="maps/도시.png"></img>
-     </div>   
-    <div class="png-adventure">
-        <img onClick="javascript:location.href='/';" src="maps/사막.png"></img>
-    </div>
-    <div class="png-adventure">    
-        <img onClick="javascript:location.href='/';" src="maps/신전.png"></img>
-    </div>
-    <div class="png-adventure">    
-        <img onClick="javascript:location.href='/';" src="maps/오른쪽산.png"></img>            
-    </div>
-    <div class="png-adventure">    
-        <img onClick="javascript:location.href='/';" src="maps/왼쪽산.png"></img>
-    </div>
-    <div class="png-adventure">
-        <img onClick="javascript:location.href='/';" src="maps/초.png"></img>
-    </div> -->
-    <!-- <img src="maps/dot_pokemap.png"></img> -->
 
+    <div class="png-adventure">
+        <img id="city" src="/maps/도시.png" onClick="javascript:location.href='/adventure/city;" >
     </div>
-    
+    <div class="png-adventure">
+        <img id="desert" src="/maps/사막.png" onClick="javascript:location.href='/adventure/desert;">
+    </div>
+    <div class="png-adventure">
+        <img id="temple" src="/maps/신전.png" onClick="javascript:location.href='/adventure/temple;">
+    </div>
+    <div class="png-adventure">
+        <img id="right_mountain" src="/maps/오른쪽산.png" onClick="javascript:location.href='/adventure/right_mountain;">
+    </div>
+    <div class="png-adventure">
+        <img id="left_mountain" src="/maps/왼쪽산.png" onClick="javascript:location.href='/adventure/left_mountain;">
+    </div>
+    <div class="png-adventure">
+        <img id="grassland" src="/maps/초원.png" onClick="javascript:location.href='/adventure/grassland;">
+    </div>
+    <div class="png-adventure">
+        <img id="ruin" src="/maps/고대유적.png" onClick="javascript:location.href='/adventure/ruin;">
+    </div>
+
+    <script type="text/javascript" src='/js/adventure.js'></script>
+    </div>
 </body>
-
-
 </html>

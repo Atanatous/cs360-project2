@@ -1,14 +1,15 @@
 .background-adventure{
 	position: absolute;
-	top: 80px;
-	left: 100px; 
+	/*top: 80px;*/
+	/*left: 100px; */
 	/*z-index: 1;*/
 }
 
 .png-adventure{
 	position: absolute;
-	top: 80px;
-	left: 100px;
+	/*top: 80px;*/
+	/*left: 100px;*/
+	visibility: hidden;
 	/*z-index: 3;*/
 }
 

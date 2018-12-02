@@ -67,11 +67,45 @@ app.get('/', function (req, res) {
     });
 });
 
-// search function of pokedex
+app.get('/login', function (req, res) {
+    console.log("Welcome login");
+    var sess = req.session;
+    var name = sess.name;
+    console.log(name);
+    if(name){
+        var query = connection.query ('select * from pokemon where first_type = ?', '불꽃' , function (err, rows) {
+            if (err) { console.error (err); throw err; }
+            res.render ('mypage', {
+                data: rows,
+                length: rows.length,
+                name: sess.name
+            });
+        });
+    }else{
+        res.render ('login');
+    }
+});
+
+
+
+app.get('/api/logout', function(req, res){
+    var sess = req.session;
+    console.log("Logout : " + sess.name);
+    sess.destroy(function(err){
+        res.redirect('/');
+    });
+});
+
+app.get('/register', function (req, res) {
+    res.render ('register');
+});
+
+
+
 app.post ('/api/search', function (req, res) {
     var sess = req.session;
     var queryState = 'select * from pokemon ';
-
+    
     condition = '"%' + req.body.search_data + '%"';
     queryState = queryState + 'where name like ' + condition;
     queryState = queryState + ' or prop2 like ' + condition;
@@ -90,16 +124,20 @@ app.post ('/api/search', function (req, res) {
     });
 });
 
-// login & register
-app.get('/login', function (req, res) {
-    console.log("Welcome login");
-    var sess = req.session;
-    var name = sess.name;
-
-    res.render ('login', {
-        name: sess.name
-    })
+app.post('/api/register', function(req, res){
+    var encryptedString = cryptr.encrypt(req.body.password);
+    var sql = "INSERT INTO TRAINER (user_id, user_pw, gold ,nickname) VALUES ?";
+    var values = [
+      [req.body.name, encryptedString, 0, req.body.nickname]
+    ];
+    console.log("Insert query: " + values);
+    connection.query(sql, [values], function (err, result) {
+      if (err) throw err;
+      console.log("Number of records inserted: " + result.affectedRows);
+    });
+    res.redirect('/login');
 });
+
 
 app.post('/api/login', function(req, res, next){
     var name=req.body.name;
@@ -113,7 +151,7 @@ app.post('/api/login', function(req, res, next){
             })
       }else{
 
-        if(results.length > 0){
+        if(results.length >0){
             console.log(results[0].user_pw);
             decryptedString = cryptr.decrypt(results[0].user_pw);
             console.log(decryptedString);
@@ -135,94 +173,6 @@ app.post('/api/login', function(req, res, next){
     });
 });
 
-app.get('/api/logout', function(req, res){
-    var sess = req.session;
-    console.log("Logout : " + sess.name);
-    sess.destroy(function(err){
-        res.redirect('/');
-    });
-});
-
-app.get('/register', function (req, res) {
-    res.render ('register');
-});
-
-
-app.post('/api/register', function(req, res){
-    var encryptedString = cryptr.encrypt(req.body.password);
-    var sql = "INSERT INTO TRAINER (user_id, user_pw, gold ,nickname) VALUES ?";
-    var values = [
-      [req.body.name, encryptedString, 0, req.body.nickname]
-    ];
-    console.log("Insert query: " + values);
-    connection.query(sql, [values], function (err, result) {
-      if (err) throw err;
-      console.log("Number of records inserted: " + result.affectedRows);
-    });
-
-    var getPokemon = connection.query ('SELECT poke_no, first_type, second_type FROM POKEMON ORDER BY RAND() LIMIT 1' , function (err, pokemon) {
-        if (err) { console.error (err); throw err; }
-        var getSkill1 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s1) {
-            if (err) { console.error (err); throw err; }
-            var getSkill2 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s2) {
-                if (err) { console.error (err); throw err; }
-                var addPokemon = "INSERT INTO POSSESS (user_id, poke_no, skill1, skill2, map, atk) VALUES (?, ?, ?, ?, ?, ?)";
-                var params = [req.body.name, pokemon[0]['poke_no'], s1[0]['skill_name'], s1[0]['skill_name'], 'Register', 110];
-                connection.query(addPokemon, params, function(err, result){
-                  if (err) throw err;
-                  console.log("Number of records inserted: " + result.affectedRows);
-                });
-            });
-        });
-    });
-
-    res.redirect('/login');
-});
-
-// mypage  & its function
-app.get('/mypage', function (req, res) {
-    var sess = req.session;
-    var name = sess.name;
-    var queryState = "Select P.img_path, P.name, Possess.atk, T.gold from Pokemon P, Trainer T, POSSESS where T.user_id = Possess.user_id AND Possess.poke_no = P.poke_no AND T.user_id = ?";
-
-    var query = connection.query (queryState, name, function (err, myInfo) {
-        if (err) { console.error (err); throw err; }
-        res.render ('mypage', {
-            name: sess.name,
-            gold: myInfo[0].gold,
-            myPokemons: myInfo,
-            length: myInfo.length
-        });
-    });
-});
-
-app.get ('/mypage/edit', function (req, res) {
-    var sess = req.session;
-    
-    res.render ('mypage-edit', {
-        name: sess.name
-    });
-});
-
-app.post('/api/mypage', function(req,res){
-    var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
-    var encryptedString = cryptr.encrypt(req.body.password);
-    var params = [req.body.nickname, encryptedString, req.session.name];
-
-    connection.query(sql, params, function(err, rows, fields){
-    if(err){
-        console.log(err);
-    } else {
-        console.log(rows);
-        req.session.destroy(function(err){
-            res.redirect('/');
-        });
-    }
-})
-});
-
-
-// TODO: make "skill_index.ejs"
 app.get('/skills', function (req, res) {
     var query = connection.query ('select * from skills', function (err, rows) {
         if (err) { console.error (err); throw err; }
@@ -232,7 +182,7 @@ app.get('/skills', function (req, res) {
     });
 });
 
-// Playground
+
 app.get('/play', function(req, res){
     var sess = req.session;
     name = sess.name;
@@ -251,6 +201,33 @@ app.get('/play', function(req, res){
         res.redirect('/login');
     }
 });
+
+app.post('/api/mypage', function(req,res){
+    // if(req.body.user_pw.length==0){
+    //     var sql = 'UPDATE TRAINER SET nickname=?, WHERE id=?';
+    //     // var encryptedString = cryptr.encrypt(req.body.password);
+    //     var params = [req.body.nickname];
+    // }else{
+    //     var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE id=?';
+    //     var encryptedString = cryptr.encrypt(req.body.password);
+    //     var params = [req.body.nickname, encryptedString];
+    // }
+    var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
+    var encryptedString = cryptr.encrypt(req.body.password);
+    var params = [req.body.nickname, encryptedString, req.session.name];
+
+    connection.query(sql, params, function(err, rows, fields){
+    if(err){
+        console.log(err);
+    } else {
+        console.log(rows);
+        req.session.destroy(function(err){
+            res.redirect('/');
+        });
+    }
+})
+});
+
 
 
 app.post('/wrongAlert', function(req, res, next){
@@ -360,4 +337,27 @@ app.get('/adventure', function(req, res){
             name : sess.name
         });
     });
+});
+
+
+app.get('/adventure/city', function(req, res){
+    
+});
+app.get('/adventure/desert', function(req, res){
+
+});
+app.get('/adventure/right_mountain', function(req, res){
+
+});
+app.get('/adventure/left_mountain', function(req, res){
+
+});
+app.get('/adventure/temple', function(req, res){
+
+});
+app.get('/adventure/grassland', function(req, res){
+
+});
+app.get('/adventure/ruin', function(req, res){
+
 });
