@@ -1,6 +1,5 @@
-@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+/* @import url(http://weloveiconfonts.com/api/?family=fontawesome);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
-
 [class*="fontawesome-"]:before {
   font-family: 'FontAwesome', sans-serif;
 }
@@ -26,7 +25,6 @@ a {
   outline: 0;
   text-decoration: none;
 }
-
 a:focus, a:hover {
   text-decoration: underline;
 }
@@ -75,7 +73,6 @@ input {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
-
 .form--login input[type="text"]:focus, .form--login input[type="text"]:hover, .form--login input[type="password"]:focus, .form--login input[type="password"]:hover {
   background-color: #434A52;
 }
@@ -137,4 +134,119 @@ input {
   margin: 0 auto;
   max-width: 20rem;
   width: 90%;
+}
+
+.site__container{
+  margin: 0 auto;
+  max-width: 50rem;
+  width: 50%
+} */
+
+
+
+* {
+  box-sizing: border-box;
+}
+.page_container{
+    padding-top: 9%;
+    padding-right: 10%;
+    padding-left: 10%;
+}
+
+.gold_container {
+    padding-top: 9%;
+    padding-bottom: 9%;
+    margin-left: 10px;
+}
+
+.card-container {
+    padding-top: 5%;
+}
+
+div.gold{
+    margin-left: 5px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-weight: 800;
+    font-size: 30px;
+}
+
+div.title {
+    margin-left: 10px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+div.card {
+    margin: 5% 2.5%;
+    padding: 5px;
+    line-height: 30%;
+    border-radius: 10px;
+    border: 1px solid #FFFFFF;
+    background-color: #F6F6F6;
+}
+
+div.card:hover {
+    border: 1px solid #777;
+}
+
+.img-container {
+    padding: 5%;
+}
+
+.card img {
+    max-width: 100%;
+}
+
+.info-container {
+    text-align: center;
+    display: block;
+    background-color: white;
+    font-size: 14px;
+    line-height:1.4;
+    padding: 5px;
+}
+
+.section {
+    display: inline-block;
+}
+
+.desc {
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+    padding: 5%;
+}
+
+.desc h2 {
+    font-size: 14px;
+    display: inline;
+}
+
+/* .desc {
+    font-size: 0.5rem;
+    padding: 5%;
+    color: rgb(60, 60, 60);
+    text-align: center;
+    line-height: 1;
+} */
+
+
+.responsive {
+    padding: 0 6px;
+    float: left;
+    width: 12.4999%;
+}
+
+@media only screen and (max-width: 900px) {
+    .responsive {
+        width: 23.99999%;
+        margin: 6px 0;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .responsive {
+        width: 100%;
+    }
 }

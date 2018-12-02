@@ -73,13 +73,20 @@ app.get('/login', function (req, res) {
     var name = sess.name;
     console.log(name);
     if(name){
-        res.render('mypage', {
-            name : name
+        var query = connection.query ('select * from pokemon where first_type = ?', '불꽃' , function (err, rows) {
+            if (err) { console.error (err); throw err; }
+            res.render ('mypage', {
+                data: rows,
+                length: rows.length,
+                name: sess.name
+            });
         });
     }else{
-        res.render ('login');    
+        res.render ('login');
     }
 });
+
+
 
 app.get('/api/logout', function(req, res){
     var sess = req.session;
@@ -98,6 +105,7 @@ app.get('/register', function (req, res) {
 app.post ('/api/search', function (req, res) {
     var sess = req.session;
     var queryState = 'select * from pokemon ';
+    
     condition = '"%' + req.body.search_data + '%"';
     queryState = queryState + 'where name like ' + condition;
     queryState = queryState + ' or prop2 like ' + condition;
@@ -105,7 +113,7 @@ app.post ('/api/search', function (req, res) {
     queryState = queryState + ' or category like ' + condition;
     queryState = queryState + ' or first_type like ' + condition;
     queryState = queryState + ' or second_type like ' + condition;
-    
+
     var query = connection.query (queryState, function (err, rows) {
         if (err) { console.error (err); throw err; }
         res.render ('index', {
@@ -134,7 +142,7 @@ app.post('/api/register', function(req, res){
 app.post('/api/login', function(req, res, next){
     var name=req.body.name;
     var password=req.body.password;
-   
+
     connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
       if (error) {
           res.json({
@@ -142,7 +150,7 @@ app.post('/api/login', function(req, res, next){
             message:'there are some error with query'
             })
       }else{
-       
+
         if(results.length >0){
             console.log(results[0].user_pw);
             decryptedString = cryptr.decrypt(results[0].user_pw);
@@ -153,9 +161,9 @@ app.post('/api/login', function(req, res, next){
                 res.redirect('/');
             }else{
                 // res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
-                res.redirect('/login', );
+                res.redirect('/login');
             }
-          
+
         }
         else{
           // res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
@@ -165,37 +173,44 @@ app.post('/api/login', function(req, res, next){
     });
 });
 
+app.get('/skills', function (req, res) {
+    var query = connection.query ('select * from skills', function (err, rows) {
+        if (err) { console.error (err); throw err; }
+        res.render ('skill_index', {
+            rows: rows
+        });
+    });
+});
+
+
 app.get('/adventure', function(req, res){
     var sess = req.session;
     name = sess.name;
     if(name){
         connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
-            console.log("In adventure user's nickname :" + results[0].nickname);
+            console.log("In play user's nickname :" + results[0].nickname);
             sess.nickname = results[0].nickname;
 
             // res.render('test');
-            res.render('adventure', {
+            res.render('play', {
                 nickname : sess.nickname,
                 name : sess.name
             });
-        });    
+        });
     }else{
         res.redirect('/login');
     }
 });
 
-
-
 app.post('/api/mypage', function(req,res){
-
     // if(req.body.user_pw.length==0){
     //     var sql = 'UPDATE TRAINER SET nickname=?, WHERE id=?';
     //     // var encryptedString = cryptr.encrypt(req.body.password);
-    //     var params = [req.body.nickname];    
+    //     var params = [req.body.nickname];
     // }else{
     //     var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE id=?';
     //     var encryptedString = cryptr.encrypt(req.body.password);
-    //     var params = [req.body.nickname, encryptedString];    
+    //     var params = [req.body.nickname, encryptedString];
     // }
     var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
     var encryptedString = cryptr.encrypt(req.body.password);
@@ -236,7 +251,7 @@ io.on('connection', function(socket){
     function chkNameDuplicated(name){
       for(var p in playerList)
         if(playerList[p].name == name)
-          return true;
+          return false;
       return false;
     }
     if(chkNameDuplicated(name)){
@@ -297,14 +312,29 @@ io.on('connection', function(socket){
   });
 });
 
-app.get('/adventure/mypage', function(req, res){
+app.get('/play/mypage', function(req, res){
     res.redirect('/');
 });
 
-app.get('/adventure/return', function(req,res){
+app.get('/play/return', function(req,res){
     res.redirect('/');
 });
 
-app.get('/adventure/logout', function(req,res){
+app.get('/play/logout', function(req,res){
     res.redirect('/api/logout');
+});
+
+
+app.get('/adventure', function(req, res){
+    var sess;
+    sess = req.session;
+
+    var query = connection.query ('select * from pokemon', function (err, rows) {
+        if (err) { console.error (err); throw err; }
+        res.render ('adventure', {
+            data: rows,
+            length: rows.length,
+            name : sess.name
+        });
+    });
 });
