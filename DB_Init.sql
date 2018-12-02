@@ -28,6 +28,14 @@ CREATE TABLE IF NOT EXISTS POKEMON (
     PRIMARY KEY (poke_no)
 );
 
+CREATE TABLE IF NOT EXISTS MAPS (
+    map_name    VARCHAR(20) NOT NULL,
+    type        VARCHAR(20) NOT NULL,
+    gold        INT         NOT NULL,
+    exp         INT         NOT NULL,
+    PRIMARY KEY (map_name)
+);
+
 CREATE TABLE IF NOT EXISTS POSSESS (
     user_id     VARCHAR(32) NOT NULL,
     poke_no     MEDIUMINT   NOT NULL,
@@ -36,7 +44,8 @@ CREATE TABLE IF NOT EXISTS POSSESS (
     map         VARCHAR(20),
     atk         INT         NOT NULL,
     FOREIGN KEY (user_id) REFERENCES TRAINER(user_id),
-    FOREIGN KEY (poke_no) REFERENCES POKEMON(poke_no)
+    FOREIGN KEY (poke_no) REFERENCES POKEMON(poke_no),
+    FOREIGN KEY (map) REFERENCES MAPS(map_name)
 );
 
 CREATE TABLE IF NOT EXISTS SKILLS (
@@ -44,12 +53,4 @@ CREATE TABLE IF NOT EXISTS SKILLS (
     type        VARCHAR(20) NOT NULL,
     atk         INT         NOT NULL,
     PRIMARY KEY (skill_name)
-);
-
-CREATE TABLE IF NOT EXISTS MAPS (
-    map_name    VARCHAR(20) NOT NULL,
-    type        VARCHAR(20) NOT NULL,
-    gold        INT         NOT NULL,
-    exp         INT         NOT NULL,
-    PRIMARY KEY (map_name)
 );

@@ -85,10 +85,11 @@ app.get('/mypage', function (req, res) {
     var queryState = "Select P.img_path, P.name, Possess.atk, T.gold from Pokemon P, Trainer T, POSSESS where T.user_id = Possess.user_id AND Possess.poke_no = P.poke_no AND T.user_id = ?";
 
     var query = connection.query (queryState, name, function (err, myInfo) {
+        console.log(myInfo);
         if (err) { console.error (err); throw err; }
         res.render ('mypage', {
             name: sess.name,
-            gold: myInfo[0].gold,
+            gold: myInfo[0]["gold"],
             myPokemons: myInfo,
             length: myInfo.length
         });
@@ -151,8 +152,26 @@ app.post('/api/register', function(req, res){
       if (err) throw err;
       console.log("Number of records inserted: " + result.affectedRows);
     });
+
+    var getPokemon = connection.query ('SELECT poke_no, first_type, second_type FROM POKEMON ORDER BY RAND() LIMIT 1' , function (err, pokemon) {
+        if (err) { console.error (err); throw err; }
+        var getSkill1 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s1) {
+            if (err) { console.error (err); throw err; }
+            var getSkill2 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s2) {
+                if (err) { console.error (err); throw err; }
+                var addPokemon = "INSERT INTO POSSESS (user_id, poke_no, skill1, skill2, map, atk) VALUES (?, ?, ?, ?, ?, ?)";
+                var params = [req.body.name, pokemon[0]['poke_no'], s1[0]['skill_name'], s1[0]['skill_name'], 'Register', 110];
+                connection.query(addPokemon, params, function(err, result){
+                  if (err) throw err;
+                  console.log("Number of records inserted: " + result.affectedRows);
+                });
+            });
+        });
+    });
+
     res.redirect('/login');
 });
+
 
 
 app.post('/api/login', function(req, res, next){
@@ -176,13 +195,11 @@ app.post('/api/login', function(req, res, next){
                 req.session.name = name;
                 res.redirect('/');
             }else{
-                // res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
                 res.redirect('/login');
             }
 
         }
         else{
-          // res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
           res.redirect('/login');
         }
       }
@@ -206,8 +223,6 @@ app.get('/play', function(req, res){
         connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
             console.log("In play user's nickname :" + results[0].nickname);
             sess.nickname = results[0].nickname;
-
-            // res.render('test');
             res.render('play', {
                 nickname : sess.nickname,
                 name : sess.name
@@ -219,15 +234,6 @@ app.get('/play', function(req, res){
 });
 
 app.post('/api/mypage', function(req,res){
-    // if(req.body.user_pw.length==0){
-    //     var sql = 'UPDATE TRAINER SET nickname=?, WHERE id=?';
-    //     // var encryptedString = cryptr.encrypt(req.body.password);
-    //     var params = [req.body.nickname];
-    // }else{
-    //     var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE id=?';
-    //     var encryptedString = cryptr.encrypt(req.body.password);
-    //     var params = [req.body.nickname, encryptedString];
-    // }
     var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
     var encryptedString = cryptr.encrypt(req.body.password);
     var params = [req.body.nickname, encryptedString, req.session.name];
@@ -254,21 +260,13 @@ app.post('/wrongAlert', function(req, res, next){
 var playerList = {};
 
 io.on('connection', function(socket){
-    // var temp_socket = socket;
-    // socket.on('test', function(name){
-    //     console.log("TEST SOCKET");
-    // });
-    console.log("EMIT TEST START");
-    socket.emit('testemit');
-    console.log("EMIT");
-
-  socket.on('nameCheck', function(name){
-    console.log("nameCheck IN");
-    function chkNameDuplicated(name){
-      for(var p in playerList)
-        if(playerList[p].name == name)
+    socket.on('nameCheck', function(name){
+        console.log("nameCheck IN");
+        function chkNameDuplicated(name){
+          for(var p in playerList)
+            if(playerList[p].name == name)
+              return false;
           return false;
-      return false;
     }
     if(chkNameDuplicated(name)){
       console.log("Name "+name+" duplicate");
@@ -367,7 +365,7 @@ app.get('/shop', function (req, res) {
             var getSkill2 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s2) {
                 if (err) { console.error (err); throw err; }
                 var addPokemon = "INSERT INTO POSSESS (user_id, poke_no, skill1, skill2, map, atk) VALUES (?, ?, ?, ?, ?, ?)";
-                var params = [name, pokemon[0]['poke_no'], s1[0]['skill_name'], s1[0]['skill_name'], 'Register', 110];
+                var params = [name, pokemon[0]['poke_no'], s1[0]['skill_name'], s1[0]['skill_name'], null, 110];
                 connection.query(addPokemon, params, function(err, result){
                   if (err) throw err;
                   console.log("Number of records inserted: " + result.affectedRows);
@@ -382,7 +380,17 @@ app.get('/shop', function (req, res) {
 
 
 app.get('/adventure/city', function(req, res){
-    
+    // res.send('<script type="text/javascript">alert("HELLO");</script>');
+    var sess = req.session;
+    var name = sess.name;
+    connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (error, myInfo, fields) {
+        if(err) { console.error(err); throw err; }
+        pokemonNum = myInfo.length;
+        randNum = getRandomInt(0, myInfo.length-1);
+        randInfo = myInfo[randNum];
+
+        sess.nickname = results[0].nickname;
+    });
 });
 app.get('/adventure/desert', function(req, res){
 
@@ -402,3 +410,8 @@ app.get('/adventure/grassland', function(req, res){
 app.get('/adventure/ruin', function(req, res){
 
 });
+
+
+function getRandomInt(min, max) { //min ~ max 사이의 임의의 정수 반환
+    return Math.floor(Math.random() * (max - min)) + min;
+}
