@@ -96,6 +96,7 @@ app.get('/register', function (req, res) {
 
 
 app.post ('/api/search', function (req, res) {
+    var sess = req.session;
     var queryState = 'select * from pokemon ';
     condition = '"%' + req.body.search_data + '%"';
     queryState = queryState + 'where name like ' + condition;
@@ -110,7 +111,7 @@ app.post ('/api/search', function (req, res) {
         res.render ('index', {
             data: rows,
             length: rows.length,
-            username: sess.username
+            name: sess.name
         });
     });
 });
