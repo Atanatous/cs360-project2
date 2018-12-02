@@ -16,23 +16,27 @@
       <div class="wrapper">
           <a href="/"><img src="/res/logo.png" width="150"></a>
           <nav>
-              <ul class="menu">
-                  <li><a href="/"> 도감 </a></li>
-                  <li><a href="/play"> 놀이방 </a></li>
-                  <li><a href="/"> 상점 </a></li>
-                  <li><a href="/login"> 
-                        <% if(name){ %> <%= name %> 
-                        <% }else{ %> 로그인 <% } %>             
-                    </a></li>
-                    <li><a href="/api/logout"> 
+            <ul class="menu">
+                <li><a href="/play/return"> 도감 </a></li>
+                <li><a href="/play"> 놀이방 </a></li>
+                <li><a href="/adventure"> 탐험 </a></li>
+                <li><a href="#"> 상점 </a></li>
+                    <li>
+                        <% if (name) { %>
+                            <a href="/mypage" > <%= name %> </a>
+                        <% } else { %>
+                            <a href="/login" > 로그인 </a>
+                        <% } %>                    
+                    </li>
+                    <li><a href="/api/logout">
                         <% if(name){ %> 로그아웃 <% }
-                        else{ %><% } %>             
+                        else{ %><% } %>
                     </a></li>
+
               </ul>
           </nav>
      </div>
   </header>
-
 
 
 
@@ -42,36 +46,40 @@
 
     <div class = "gold_container">
       <div class = "gold">
-          <p> <%= data[0] ['name'] %> Gold </p>
+          <p> <%= gold %> Gold </p>
       </div>
     </div>
 
+
+      <!--
+        data: myPokemon, // 내포켓몬 번호
+        length: myPokemon.length,
+        book: pokemons, // 도감 _ poke_no, name, img_path
+      -->
 
     <div class="card-container">
         <div class = "title"> <h2> 내 포켓몬 </h2> </div>
         <ul>
             <% for (var i=0; i < length; i++) { %>
-                <li>
-                    <div class="responsive">
-                        <div class="card">
+            <li>   
+                <div class="responsive">
+                    <div class="card">
+                        <div class="img-container">
+                            <img src= <%= myPokemons[i]['img_path'] %> >
+                        </div>
 
-                            <div class="img-container">
-                                <img src= <%= data[i]['img_path'] %>>
+                        <div class="info-container">
+                            <div class="section">
+                                <p> <%= myPokemons[i]['name'] %> </p>
                             </div>
+                        </div>
 
-                            <div class="info-container">
-                                <div class="section">
-                                    <p> <%= data[i] ['name'] %> </p>
-                                </div>
-                            </div>
-
-                            <div class="desc">
-                                ATK. <h2> <%= data[i]['height'] %> </h2>
-                            </div>
-
+                        <div class="desc">
+                            ATK. <h2> <%= myPokemons[i]['atk'] %> </h2>
                         </div>
                     </div>
-                </li>
+                </div>
+            </li>
             <% } %>
         </ul>
     </div>

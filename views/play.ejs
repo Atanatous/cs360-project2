@@ -31,10 +31,13 @@
                     <li><a href="/play"> 놀이방 </a></li>
                     <li><a href="/adventure"> 탐험 </a></li>
                     <li><a href="#"> 상점 </a></li>
-                    <li><a href="/play/mypage"> 
-                        <% if(name){ %> <%= name %> 
-                        <% }else{ %> 로그인 <% } %>             
-                    </a></li>
+                    <li>
+                        <% if (name) { %>
+                            <a href="/mypage" > <%= name %> </a>
+                        <% } else { %>
+                            <a href="/login" > 로그인 </a>
+                        <% } %>                    
+                    </li>
                     <li><a href="/play/logout"> 
                         <% if(name){ %> 로그아웃 <% }
                         else{ %><% } %>             
