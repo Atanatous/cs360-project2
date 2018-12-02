@@ -9,7 +9,7 @@ ALTER DATABASE cs360_team10 DEFAULT CHARACTER SET euckr;
 CREATE TABLE IF NOT EXISTS TRAINER (
     uid         MEDIUMINT   NOT NULL AUTO_INCREMENT,
 	user_id     VARCHAR(32) NOT NULL UNIQUE,
-	user_pw     VARCHAR(32) NOT NULL,
+	user_pw     VARCHAR(300) NOT NULL,
 	gold        INT         DEFAULT 0,
 	nickname    VARCHAR(32) NOT NULL,
 	PRIMARY KEY (uid)
@@ -39,3 +39,15 @@ CREATE TABLE IF NOT EXISTS POSSESS (
     FOREIGN KEY (poke_no) REFERENCES POKEMON(poke_no)
 );
 
+CREATE TABLE IF NOT EXISTS SKILLS (
+    skill_name  VARCHAR(20) NOT NULL,
+    type        VARCHAR(20) NOT NULL,
+    atk         SMALLINT    NOT NULL,
+    PRIMARY KEY (skill_name)
+);
+
+CREATE TABLE IF NOT EXISTS MAPS (
+    map_name    VARCHAR(20) NOT NULL,
+    type        VARCHAR(20) NOT NULL,
+    PRIMARY KEY (map_name)
+);

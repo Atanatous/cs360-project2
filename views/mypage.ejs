@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/sign.css">
+    <link rel="stylesheet" href="/css/mypage.css">
     <title>login</title>
 <style>
 
@@ -33,33 +33,50 @@
      </div>
   </header>
 
-  <div class="site__container">
 
-    <div class="grid__container">
 
-      <form action="/api/mypage" method="post" class="form form--login">
 
-        <div class="form__field">
-          <label class="fontawesome-tag" for="login__nickname"><span class="hidden">Nickname</span></label>
-          <input name = "nickname" id="login__nickname" type="text" class="form__input" placeholder="Nickname" required>
-        </div>
+  <div class = "page_container">
 
-        <div class="form__field">
-          <label class="fontawesome-lock" for="login__password"><span class="hidden">Change Password</span></label>
-          <input name="password" id="login__password" type="password" class="form__input" placeholder="Password" required>
-        </div>
+    <div class = "title"> <h2> 내 골드 </h2> </div>
 
-        <div class="form__field">
-          <input type="submit" value="Change">
-        </div>
-
-      </form>
-
-      <!-- <p class="text—center">회원이 아니신가요?   <a href="/register">  회원가입  </a> <span class="fontawesome-arrow-right"></span></p> -->
-
+    <div class = "gold_container">
+      <div class = "gold">
+          <p> <%= data[0] ['name'] %> Gold </p>
+      </div>
     </div>
 
+
+    <div class="card-container">
+        <div class = "title"> <h2> 내 포켓몬 </h2> </div>
+        <ul>
+            <% for (var i=0; i < length; i++) { %>
+                <li>
+                    <div class="responsive">
+                        <div class="card">
+
+                            <div class="img-container">
+                                <img src= <%= data[i]['img_path'] %>>
+                            </div>
+
+                            <div class="info-container">
+                                <div class="section">
+                                    <p> <%= data[i] ['name'] %> </p>
+                                </div>
+                            </div>
+
+                            <div class="desc">
+                                ATK. <h2> <%= data[i]['height'] %> </h2>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+            <% } %>
+        </ul>
+    </div>
   </div>
+
 
 
 </body>
