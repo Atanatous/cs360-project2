@@ -1,0 +1,26 @@
+.background-adventure{
+	position: absolute;
+	top: 80px;
+	left: 100px; 
+	/*z-index: 1;*/
+}
+
+.png-adventure{
+	position: absolute;
+	top: 80px;
+	left: 100px;
+	/*z-index: 3;*/
+}
+
+@media only screen and (max-width: 900px) {
+    .responsive {
+        width: 49.99999%;
+        margin: 6px 0;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .responsive {
+        width: 100%;
+    }
+}

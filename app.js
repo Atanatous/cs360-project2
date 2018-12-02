@@ -164,16 +164,16 @@ app.post('/api/login', function(req, res, next){
     });
 });
 
-app.get('/adventure', function(req, res){
+app.get('/play', function(req, res){
     var sess = req.session;
     name = sess.name;
     if(name){
         connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
-            console.log("In adventure user's nickname :" + results[0].nickname);
+            console.log("In play user's nickname :" + results[0].nickname);
             sess.nickname = results[0].nickname;
 
             // res.render('test');
-            res.render('adventure', {
+            res.render('play', {
                 nickname : sess.nickname,
                 name : sess.name
             });
@@ -183,10 +183,7 @@ app.get('/adventure', function(req, res){
     }
 });
 
-
-
 app.post('/api/mypage', function(req,res){
-
     // if(req.body.user_pw.length==0){
     //     var sql = 'UPDATE TRAINER SET nickname=?, WHERE id=?';
     //     // var encryptedString = cryptr.encrypt(req.body.password);
@@ -235,7 +232,7 @@ io.on('connection', function(socket){
     function chkNameDuplicated(name){
       for(var p in playerList)
         if(playerList[p].name == name)
-          return true;
+          return false;
       return false;
     }
     if(chkNameDuplicated(name)){
@@ -296,14 +293,29 @@ io.on('connection', function(socket){
   });
 });
 
-app.get('/adventure/mypage', function(req, res){
+app.get('/play/mypage', function(req, res){
     res.redirect('/');
 });
 
-app.get('/adventure/return', function(req,res){
+app.get('/play/return', function(req,res){
     res.redirect('/');
 });
 
-app.get('/adventure/logout', function(req,res){
+app.get('/play/logout', function(req,res){
     res.redirect('/api/logout');
+});
+
+
+app.get('/adventure', function(req, res){
+    var sess;
+    sess = req.session;
+
+    var query = connection.query ('select * from pokemon', function (err, rows) {
+        if (err) { console.error (err); throw err; }
+        res.render ('adventure', {
+            data: rows,
+            length: rows.length,
+            name : sess.name
+        });
+    });
 });

@@ -121,6 +121,17 @@ var sprites = [
   "http://jonkantner.com/experiments/vwc/chibi_f.svg"
 ];
 
+// var sprites = [
+//   "maps/dot_pokemap.png",
+//   "maps/고대유적.png",
+//   "maps/도시.png",
+//   "maps/사막.png",
+//   "maps/신전.png",
+//   "maps/오른쪽산.png",
+//   "maps/왼쪽산.png",
+//   "maps/초원."
+// ];
+
 images = [];
 for (var sp in sprites) {
   images.push(new Image());
@@ -273,6 +284,7 @@ structures = [
   new structure(10, h - chatBar.barH - 10, 0, 10),
   new structure(10, h - chatBar.barH - 10, w - 10, 10),
   new structure(300, 200, w / 2 - 150, h/2-100, 70, images[1], true, 12)
+  // new structure(300, 200, w / 2 - 150, h/2-100, 70, images[0], true)
 ],
 worldObjs = [],
 control = function(avatar) {
@@ -359,6 +371,11 @@ drawScreen = function() {
   let ground = ctx.createPattern(images[0], 'repeat'),
     pathW = 50,
     path = ctx.createLinearGradient(w / 2 - pathW / 2, 0, w / 2 + pathW / 2, 0);
+  // let ground = 
+  //   pathW = 50,
+  //   path = ctx.createLinearGradient(w / 2 - pathW / 2, 0, w / 2 + pathW / 2, 0);
+
+  // let ground = ctx.createPattern(images[0], 'no-repeat')
 
   path.addColorStop(0.05, "#863");
   path.addColorStop(0.05, "#974");
