@@ -67,25 +67,41 @@ app.get('/', function (req, res) {
     });
 });
 
+// login & register
 app.get('/login', function (req, res) {
     console.log("Welcome login");
     var sess = req.session;
     var name = sess.name;
-    console.log(name);
-    if(name){
-        var query = connection.query ('select * from pokemon where first_type = ?', '불꽃' , function (err, rows) {
-            if (err) { console.error (err); throw err; }
-            res.render ('mypage', {
-                data: rows,
-                length: rows.length,
-                name: sess.name
-            });
-        });
-    }else{
-        res.render ('login');
-    }
+
+    res.render ('login', {
+        name: sess.name
+    })
 });
 
+// mypage  & its function
+app.get('/mypage', function (req, res) {
+    var sess = req.session;
+    var name = sess.name;
+    var queryState = "Select P.img_path, P.name, Possess.atk, T.gold from Pokemon P, Trainer T, POSSESS where T.user_id = Possess.user_id AND Possess.poke_no = P.poke_no AND T.user_id = ?";
+
+    var query = connection.query (queryState, name, function (err, myInfo) {
+        if (err) { console.error (err); throw err; }
+        res.render ('mypage', {
+            name: sess.name,
+            gold: myInfo[0].gold,
+            myPokemons: myInfo,
+            length: myInfo.length
+        });
+    });
+});
+
+app.get ('/mypage/edit', function (req, res) {
+    var sess = req.session;
+    
+    res.render ('mypage-edit', {
+        name: sess.name
+    });
+});
 
 
 app.get('/api/logout', function(req, res){
@@ -337,6 +353,31 @@ app.get('/adventure', function(req, res){
             name : sess.name
         });
     });
+});
+
+app.get('/shop', function (req, res) {
+
+    var sess = req.session;
+    var name = sess.name;
+
+    var getPokemon = connection.query ('SELECT poke_no, first_type, second_type FROM POKEMON ORDER BY RAND() LIMIT 1' , function (err, pokemon) {
+        if (err) { console.error (err); throw err; }
+        var getSkill1 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s1) {
+            if (err) { console.error (err); throw err; }
+            var getSkill2 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s2) {
+                if (err) { console.error (err); throw err; }
+                var addPokemon = "INSERT INTO POSSESS (user_id, poke_no, skill1, skill2, map, atk) VALUES (?, ?, ?, ?, ?, ?)";
+                var params = [name, pokemon[0]['poke_no'], s1[0]['skill_name'], s1[0]['skill_name'], 'Register', 110];
+                connection.query(addPokemon, params, function(err, result){
+                  if (err) throw err;
+                  console.log("Number of records inserted: " + result.affectedRows);
+                });
+            });
+        });
+    });
+
+    console.log("shop");
+    res.redirect('/');
 });
 
 
