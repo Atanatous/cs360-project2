@@ -42,10 +42,10 @@ CREATE TABLE IF NOT EXISTS POSSESS (
     skill1      VARCHAR(20) NOT NULL,
     skill2      VARCHAR(20),
     map         VARCHAR(20),
-    atk         INT         NOT NULL,
+    atk         INT,
     FOREIGN KEY (user_id) REFERENCES TRAINER(user_id),
     FOREIGN KEY (poke_no) REFERENCES POKEMON(poke_no),
-    FOREIGN KEY (map) REFERENCES MAPS(map_name)
+    FOREIGN KEY (map)     REFERENCES MAPS(map_name)
 );
 
 CREATE TABLE IF NOT EXISTS SKILLS (
@@ -54,3 +54,22 @@ CREATE TABLE IF NOT EXISTS SKILLS (
     atk         INT         NOT NULL,
     PRIMARY KEY (skill_name)
 );
+
+DELIMITER //
+CREATE TRIGGER after_register 
+    AFTER INSERT ON TRAINER
+    FOR EACH ROW 
+BEGIN
+    DECLARE pokeNo MEDIUMINT;
+    DECLARE skill VARCHAR(20);
+    DECLARE attack INT;
+    DECLARE type1 VARCHAR (20);
+    DECLARE type2 VARCHAR (20);
+
+    SELECT poke_no, first_type, second_type INTO pokeNO, type1, type2 from POKEMON ORDER BY RAND() LIMIT 1;
+    SELECT skill_name, atk INTO skill, attack from SKILLS where type=type1 or type=type2 LIMIT 1;
+    
+    INSERT INTO POSSESS(user_id, poke_no, skill1, atk) VALUES (NEW.user_id, pokeNo, skill, attack);
+END //
+DELIMITER ;
+    

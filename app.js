@@ -143,36 +143,16 @@ app.post ('/api/search', function (req, res) {
 
 app.post('/api/register', function(req, res){
     var encryptedString = cryptr.encrypt(req.body.password);
-    var sql = "INSERT INTO TRAINER (user_id, user_pw, gold ,nickname) VALUES ?";
+    var sql = "INSERT INTO TRAINER (user_id, user_pw, nickname) VALUES ?";
     var values = [
-      [req.body.name, encryptedString, 0, req.body.nickname]
+      [req.body.name, encryptedString, req.body.nickname]
     ];
-    console.log("Insert query: " + values);
+
     connection.query(sql, [values], function (err, result) {
-      if (err) throw err;
-      console.log("Number of records inserted: " + result.affectedRows);
+      if (err) {console.error (err); throw err; }
+      res.redirect ('/login');
     });
-
-    var getPokemon = connection.query ('SELECT poke_no, first_type, second_type FROM POKEMON ORDER BY RAND() LIMIT 1' , function (err, pokemon) {
-        if (err) { console.error (err); throw err; }
-        var getSkill1 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s1) {
-            if (err) { console.error (err); throw err; }
-            var getSkill2 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s2) {
-                if (err) { console.error (err); throw err; }
-                var addPokemon = "INSERT INTO POSSESS (user_id, poke_no, skill1, skill2, map, atk) VALUES (?, ?, ?, ?, ?, ?)";
-                var params = [req.body.name, pokemon[0]['poke_no'], s1[0]['skill_name'], s1[0]['skill_name'], 'Register', 110];
-                connection.query(addPokemon, params, function(err, result){
-                  if (err) throw err;
-                  console.log("Number of records inserted: " + result.affectedRows);
-                });
-            });
-        });
-    });
-
-    res.redirect('/login');
 });
-
-
 
 app.post('/api/login', function(req, res, next){
     var name=req.body.name;
@@ -183,7 +163,7 @@ app.post('/api/login', function(req, res, next){
           res.json({
             status:false,
             message:'there are some error with query'
-            })
+            });
       }else{
 
         if(results.length >0){
