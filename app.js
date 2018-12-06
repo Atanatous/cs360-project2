@@ -81,15 +81,21 @@ app.get('/login', function (req, res) {
 app.get('/mypage', function (req, res) {
     var sess = req.session;
     var name = sess.name;
-    var queryState = "Select P.img_path, P.name, Possess.atk, T.gold from Pokemon P, Trainer T, POSSESS where T.user_id = Possess.user_id AND Possess.poke_no = P.poke_no AND T.user_id = ?";
+    var queryState = "SELECT P.img_path, P.name, Possess.atk, T.gold FROM Pokemon P, Trainer T, POSSESS WHERE T.user_id = Possess.user_id AND Possess.poke_no = P.poke_no AND T.user_id = ?";
+    var aggregateSQL = "SELECT AVG(atk) AS avgAtk FROM POSSESS WHERE user_id = ?";
 
     var query = connection.query (queryState, name, function (err, myInfo) {
         if (err) { console.error (err); throw err; }
-        res.render ('mypage', {
-            name: sess.name,
-            gold: myInfo[0].gold,
-            myPokemons: myInfo,
-            length: myInfo.length
+
+        // aggregation query. To show average attak of pokemons.
+        connection.query (aggregateSQL, [name], function (err, average) {
+            res.render ('mypage', {
+                name: sess.name,
+                gold: myInfo[0].gold,
+                myPokemons: myInfo,
+                length: myInfo.length,
+                avgAtk: average[0].avgAtk
+            });
         });
     });
 });
