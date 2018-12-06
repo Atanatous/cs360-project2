@@ -5,16 +5,14 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/card.css">
-
-    
-    <style type="text/css">
-        .bg_highlight { background: #f7f7f7; }
+    <style>
+        .clicked { background-color: #286090; border-color: #204d74; }
     </style>
     <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
     $(function() {
         $(".type-category .type").click(function() {
-            $(this).toggleClass("bg_highlight");
+            $(this).toggleClass("clicked");
         });
     })
     </script>
@@ -222,5 +220,5 @@
               
 </body>
 
-
+<script type="text/javascript" src='/js/type-search.js'></script>
 </html>

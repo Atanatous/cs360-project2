@@ -5,22 +5,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/card.css">
-    <link rel="stylesheet" href="/css/adventure.css">
-
-    
-    <style type="text/css">
-        .bg_highlight { background: #f7f7f7; }
-    </style>
-    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript">
-    $(function() {
-        $(".type-category .type").click(function() {
-            $(this).toggleClass("bg_highlight");
-        });
-    })
-    </script>
-
-    
+    <link rel="stylesheet" href="/css/adventure.css">    
 </head>
 
 <body class="align">
@@ -52,10 +37,17 @@
     
     <div>
 
-    <div class="background-adventure">
-        <img id = "background" src="maps/dot_pokemap.png"></img>
+    <div class="side" id="pikachu-box">
+        <img id="pikachu" src="/res/pikachu.png">
     </div>
 
+    <div class="side" id="squirtle-box">
+        <img id="squirtle" src="/res/squirtle.png">
+    </div>
+
+    <div class="background-adventure">
+        <img id = "background" src="/maps/dot_pokemap.png">
+    </div>
 
     <div class="png-adventure">
         <img id="city" src="/maps/도시.png" onClick="javascript:location.href='/adventure/city';">

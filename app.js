@@ -69,7 +69,6 @@ app.get('/', function (req, res) {
 
 // login & register
 app.get('/login', function (req, res) {
-    console.log("Welcome login");
     var sess = req.session;
     var name = sess.name;
 
@@ -85,7 +84,6 @@ app.get('/mypage', function (req, res) {
     var queryState = "Select P.img_path, P.name, Possess.atk, T.gold from Pokemon P, Trainer T, POSSESS where T.user_id = Possess.user_id AND Possess.poke_no = P.poke_no AND T.user_id = ?";
 
     var query = connection.query (queryState, name, function (err, myInfo) {
-        console.log(myInfo);
         if (err) { console.error (err); throw err; }
         res.render ('mypage', {
             name: sess.name,
@@ -104,10 +102,8 @@ app.get ('/mypage/edit', function (req, res) {
     });
 });
 
-
 app.get('/api/logout', function(req, res){
     var sess = req.session;
-    console.log("Logout : " + sess.name);
     sess.destroy(function(err){
         res.redirect('/');
     });
@@ -117,13 +113,11 @@ app.get('/register', function (req, res) {
     res.render ('register');
 });
 
-
-
 app.post ('/api/search', function (req, res) {
     var sess = req.session;
     var queryState = 'select * from pokemon ';
     
-    condition = '"%' + req.body.search_data + '%"';
+    condition = '"%' + req.body.search_data.trim() + '%"';
     queryState = queryState + 'where name like ' + condition;
     queryState = queryState + ' or prop2 like ' + condition;
     queryState = queryState + ' or prop1 like ' + condition;
@@ -165,20 +159,17 @@ app.post('/api/login', function(req, res, next){
             status:false,
             message:'there are some error with query'
             });
-      }else{
-
-        if(results.length >0){
-            console.log(results[0].user_pw);
+      } else {
+        if (results.length >0){
             decryptedString = cryptr.decrypt(results[0].user_pw);
-            console.log(decryptedString);
-            if(password==decryptedString){
-                console.log("Login Success, User name :" + name);
+
+            if (password==decryptedString){
                 req.session.name = name;
                 res.redirect('/');
-            }else{
+            }
+            else{
                 res.redirect('/login');
             }
-
         }
         else{
           res.redirect('/login');
@@ -196,6 +187,139 @@ app.get('/skills', function (req, res) {
     });
 });
 
+app.post('/api/mypage', function(req,res){
+    var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
+    var encryptedString = cryptr.encrypt(req.body.password);
+    var params = [req.body.nickname, encryptedString, req.session.name];
+
+    connection.query(sql, params, function(err, rows, fields) {
+        if(err){ console.error(err); throw (err); }
+        console.log(rows);
+        req.session.destroy(function(err) {
+            res.redirect('/');
+        });
+    });
+});
+
+app.get('/shop', function (req, res) {
+    var sess = req.session;
+    var name = sess.name;
+    var getGoldQuery = 'SELECT gold FROM TRAINER WHERE user_id=?';
+    var updateGoldQuery = 'UPDATE TRAINER SET gold=? WHERE user_id=?';
+ 
+    var insertQuery = 'INSERT INTO POSSESS(user_id, poke_no, skill1, atk)';
+    var insertSubQuery = 'SELECT ';
+    insertSubQuery = insertSubQuery + "'" + name + "', ";
+    insertSubQuery = insertSubQuery + 'P.poke_no, S.skill_name, S.atk FROM POKEMON P, SKILLS S WHERE P.first_type=S.type OR P.second_type=S.type ORDER BY RAND() LIMIT 1';
+    
+    var FinalQuery = insertQuery + insertSubQuery;
+    
+    if (name)
+    {
+        connection.query(getGoldQuery, [name], function(err, result){
+            if (err) { console.error(err); throw err; }
+            gold = result[0].gold;
+
+            if (gold <= 100)
+            {
+                // TODO: 돈 없을 시 확인창 띄우기로 변경.
+                res.redirect('/adventure');
+            }
+            else
+            {
+                gold = gold - 100;
+                connection.query(updateGoldQuery, [gold, name], function (err, data) {
+                    if (err) { console.error(err); throw err; }
+                    connection.query (FinalQuery, function (err, result) {
+                        if (err) { console.error (err); throw err; }
+                        res.redirect('/mypage');
+                    });
+                });
+            }
+        });
+    } 
+    else { res.redirect('/login'); }
+});
+
+app.get('/adventure', function(req, res){
+    var sess;
+    sess = req.session;
+
+    var query = connection.query ('select * from pokemon', function (err, rows) {
+        if (err) { console.error (err); throw err; }
+        res.render ('adventure', {
+            data: rows,
+            length: rows.length,
+            name : sess.name
+        });
+    });
+});
+
+// listener which applied to each component in adventure page.
+var adv_component_listener = function(req, res) 
+{
+    var sess = req.session;
+    var name = sess.name;
+    var urlComponent = req.url.split("/");
+    var component = urlComponent[urlComponent.length - 1];
+
+    if (name) {
+        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo) {
+            if(err) { console.error(err); throw err; }
+
+            pokemonNum = myInfo.length;
+            randNum = getRandomInt(0, myInfo.length-1);
+            name = myInfo[randNum].user_id;
+
+            connection.query('SELECT * FROM MAPS WHERE map_name = ?', [component], function(err, info){
+                if(err) { console.error(err); throw err; }
+                console.log(info);
+                gold = info[0].gold;
+                sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?';
+                sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?';
+
+                connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
+                    if(err) { console.error(err); throw err; }
+                    prior_gold = data[0].gold;
+                    gold = gold + prior_gold;
+
+                    connection.query(sql_gold, [gold, name], function(err, data){
+                        if(err) { console.error(err); throw err; }
+                        connection.query(sql_map, ["city", name], function(err, data){
+                            if(err) { console.error(err); throw err; }
+                            res.redirect('/adventure');
+                        });
+                    });
+                });
+            });        
+        }); 
+    } 
+    else { res.redirect('/login'); }
+}
+
+app.get('/adventure/city', adv_component_listener);
+app.get('/adventure/desert', adv_component_listener);
+app.get('/adventure/right_mountain', adv_component_listener);
+app.get('/adventure/left_mountain', adv_component_listener);
+app.get('/adventure/temple', adv_component_listener);
+app.get('/adventure/grassland', adv_component_listener);
+app.get('/adventure/ruin', adv_component_listener);
+
+
+/************************
+    PlayGround Functions
+*************************/
+
+function getRandomInt(min, max) { //min ~ max 사이의 임의의 정수 반환
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+app.post('/wrongAlert', function(req, res, next){
+    res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
+});
+
+
+var playerList = {};
 
 app.get('/play', function(req, res){
     var sess = req.session;
@@ -213,32 +337,6 @@ app.get('/play', function(req, res){
         res.redirect('/login');
     }
 });
-
-app.post('/api/mypage', function(req,res){
-    var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
-    var encryptedString = cryptr.encrypt(req.body.password);
-    var params = [req.body.nickname, encryptedString, req.session.name];
-
-    connection.query(sql, params, function(err, rows, fields){
-    if(err){
-        console.log(err);
-    } else {
-        console.log(rows);
-        req.session.destroy(function(err){
-            res.redirect('/');
-        });
-    }
-})
-});
-
-
-
-app.post('/wrongAlert', function(req, res, next){
-    res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
-});
-
-
-var playerList = {};
 
 io.on('connection', function(socket){
     socket.on('nameCheck', function(name){
@@ -318,348 +416,3 @@ app.get('/play/return', function(req,res){
 app.get('/play/logout', function(req,res){
     res.redirect('/api/logout');
 });
-
-
-app.get('/adventure', function(req, res){
-    var sess;
-    sess = req.session;
-
-    var query = connection.query ('select * from pokemon', function (err, rows) {
-        if (err) { console.error (err); throw err; }
-        res.render ('adventure', {
-            data: rows,
-            length: rows.length,
-            name : sess.name
-        });
-    });
-});
-
-app.get('/shop', function (req, res) {
-
-    var sess = req.session;
-    var name = sess.name;
-
-    if(name)
-    {
-        connection.query('SELECT * FROM TRAINER WHERE user_id=?', [name], function(err, data){
-            if(err) { console.error(err); throw err; }
-            gold = data[0].gold;
-            if(gold <= 100)
-            {
-                console.log(name + " no money must go adventure");
-                res.redirect('/adventure');
-            }
-            else
-            {
-                gold = gold - 100;
-                connection.query('UPDATE TRAINER SET gold=? WHERE user_id=?', [gold, name], function(err,data){
-                    if(err) { console.error(err); throw err; }
-                        var getPokemon = connection.query ('SELECT poke_no, first_type, second_type FROM POKEMON ORDER BY RAND() LIMIT 1' , function (err, pokemon) {
-                            if (err) { console.error (err); throw err; }
-                            var getSkill1 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s1) {
-                                if (err) { console.error (err); throw err; }
-                                var getSkill2 = connection.query ('SELECT skill_name, atk FROM SKILLS ORDER BY RAND()' , function (err, s2) {
-                                    if (err) { console.error (err); throw err; }
-                                    var addPokemon = "INSERT INTO POSSESS (user_id, poke_no, skill1, skill2, map, atk) VALUES (?, ?, ?, ?, ?, ?)";
-                                    var params = [name, pokemon[0]['poke_no'], s1[0]['skill_name'], s1[0]['skill_name'], null, 110];
-                                    connection.query(addPokemon, params, function(err, result){
-                                        if (err) throw err;
-                                        console.log("Number of records inserted: " + result.affectedRows);
-                                        console.log("shop");
-                                        res.redirect('/mypage');
-                                    });
-                                });
-                            });
-                        });
-                });
-            }
-        });
-    }
-    else
-    {
-        res.redirect('/login');
-    }
-
-});
-
-
-app.get('/adventure/city', function(req, res){
-    // res.send('<script type="text/javascript">alert("HELLO");</script>');
-    var sess = req.session;
-    var name = sess.name;
-
-    if(name){
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo, fields) {
-        if(err) { console.error(err); throw err; }
-
-        // console.log(myInfo);
-        pokemonNum = myInfo.length;
-        randNum = getRandomInt(0, myInfo.length-1);
-        name = myInfo[randNum].user_id;
-
-        connection.query('SELECT * FROM MAPS WHERE map_name = ?', ["city"], function(err, info){
-            if(err) { console.error(err); throw err; }
-            console.log(info);
-            gold = info[0].gold;
-            sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?'
-            sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?'
-
-            connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
-                if(err) { console.error(err); throw err; }
-                prior_gold = data[0].gold;
-                gold = gold + prior_gold;
-
-                connection.query(sql_gold, [gold, name], function(err, data){
-                    if(err) { console.error(err); throw err; }
-                    connection.query(sql_map, ["city", name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        res.redirect('/adventure');
-                    });
-                });
-            });
-        });        
-    }); 
-    }else{
-        res.redirect('/login');
-    }
-});
-
-app.get('/adventure/desert', function(req, res){
-    var sess = req.session;
-    var name = sess.name;
-
-    if(name){
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo, fields) {
-        if(err) { console.error(err); throw err; }
-
-        // console.log(myInfo);
-        pokemonNum = myInfo.length;
-        randNum = getRandomInt(0, myInfo.length-1);
-        name = myInfo[randNum].user_id;
-
-        connection.query('SELECT * FROM MAPS WHERE map_name = ?', ["desert"], function(err, info){
-            if(err) { console.error(err); throw err; }
-            console.log(info);
-            gold = info[0].gold;
-            sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?'
-            sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?'
-
-            connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
-                if(err) { console.error(err); throw err; }
-                prior_gold = data[0].gold;
-                gold = gold + prior_gold;
-
-                connection.query(sql_gold, [gold, name], function(err, data){
-                    if(err) { console.error(err); throw err; }
-                    connection.query(sql_map, ["desert", name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        res.redirect('/adventure');
-                    });
-                });
-            });
-        });        
-    }); 
-    }else{
-        res.redirect('/login');
-    }
-});
-app.get('/adventure/right_mountain', function(req, res){
-    var sess = req.session;
-    var name = sess.name;
-
-     if(name){
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo, fields) {
-        if(err) { console.error(err); throw err; }
-
-        // console.log(myInfo);
-        pokemonNum = myInfo.length;
-        randNum = getRandomInt(0, myInfo.length-1);
-        name = myInfo[randNum].user_id;
-
-        connection.query('SELECT * FROM MAPS WHERE map_name = ?', ["right_mountain"], function(err, info){
-            if(err) { console.error(err); throw err; }
-            console.log(info);
-            gold = info[0].gold;
-            sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?'
-            sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?'
-
-            connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
-                if(err) { console.error(err); throw err; }
-                prior_gold = data[0].gold;
-                gold = gold + prior_gold;
-
-                connection.query(sql_gold, [gold, name], function(err, data){
-                    if(err) { console.error(err); throw err; }
-                    connection.query(sql_map, ["right_mountain", name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        res.redirect('/adventure');
-                    });
-                });
-            });
-        });        
-    }); 
-    }else{
-        res.redirect('/login');
-    }
-});
-app.get('/adventure/left_mountain', function(req, res){
-    var sess = req.session;
-    var name = sess.name;
-
-     if(name){
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo, fields) {
-        if(err) { console.error(err); throw err; }
-
-        // console.log(myInfo);
-        pokemonNum = myInfo.length;
-        randNum = getRandomInt(0, myInfo.length-1);
-        name = myInfo[randNum].user_id;
-
-        connection.query('SELECT * FROM MAPS WHERE map_name = ?', ["left_mountain"], function(err, info){
-            if(err) { console.error(err); throw err; }
-            console.log(info);
-            gold = info[0].gold;
-            sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?'
-            sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?'
-
-            connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
-                if(err) { console.error(err); throw err; }
-                prior_gold = data[0].gold;
-                gold = gold + prior_gold;
-
-                connection.query(sql_gold, [gold, name], function(err, data){
-                    if(err) { console.error(err); throw err; }
-                    connection.query(sql_map, ["left_mountain", name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        res.redirect('/adventure');
-                    });
-                });
-            });
-        });        
-    }); 
-    }else{
-        res.redirect('/login');
-    }
-});
-app.get('/adventure/temple', function(req, res){
-    var sess = req.session;
-    var name = sess.name;
-
-     if(name){
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo, fields) {
-        if(err) { console.error(err); throw err; }
-
-        // console.log(myInfo);
-        pokemonNum = myInfo.length;
-        randNum = getRandomInt(0, myInfo.length-1);
-        name = myInfo[randNum].user_id;
-
-        connection.query('SELECT * FROM MAPS WHERE map_name = ?', ["temple"], function(err, info){
-            if(err) { console.error(err); throw err; }
-            console.log(info);
-            gold = info[0].gold;
-            sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?'
-            sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?'
-
-            connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
-                if(err) { console.error(err); throw err; }
-                prior_gold = data[0].gold;
-                gold = gold + prior_gold;
-
-                connection.query(sql_gold, [gold, name], function(err, data){
-                    if(err) { console.error(err); throw err; }
-                    connection.query(sql_map, ["temple", name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        res.redirect('/adventure');
-                    });
-                });
-            });
-        });        
-    }); 
-    }else{
-        res.redirect('/login');
-    }
-});
-app.get('/adventure/grassland', function(req, res){
-    var sess = req.session;
-    var name = sess.name;
-
-    if(name){
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo, fields) {
-        if(err) { console.error(err); throw err; }
-
-        // console.log(myInfo);
-        pokemonNum = myInfo.length;
-        randNum = getRandomInt(0, myInfo.length-1);
-        name = myInfo[randNum].user_id;
-
-        connection.query('SELECT * FROM MAPS WHERE map_name = ?', ["grassland"], function(err, info){
-            if(err) { console.error(err); throw err; }
-            console.log(info);
-            gold = info[0].gold;
-            sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?'
-            sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?'
-
-            connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
-                if(err) { console.error(err); throw err; }
-                prior_gold = data[0].gold;
-                gold = gold + prior_gold;
-
-                connection.query(sql_gold, [gold, name], function(err, data){
-                    if(err) { console.error(err); throw err; }
-                    connection.query(sql_map, ["grassland", name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        res.redirect('/adventure');
-                    });
-                });
-            });
-        });        
-    }); 
-    }else{
-        res.redirect('/login');
-    }
-});
-app.get('/adventure/ruin', function(req, res){
-    var sess = req.session;
-    var name = sess.name;
-
-     if(name){
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo, fields) {
-        if(err) { console.error(err); throw err; }
-
-        // console.log(myInfo);
-        pokemonNum = myInfo.length;
-        randNum = getRandomInt(0, myInfo.length-1);
-        name = myInfo[randNum].user_id;
-
-        connection.query('SELECT * FROM MAPS WHERE map_name = ?', ["ruin"], function(err, info){
-            if(err) { console.error(err); throw err; }
-            console.log(info);
-            gold = info[0].gold;
-            sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?'
-            sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?'
-
-            connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
-                if(err) { console.error(err); throw err; }
-                prior_gold = data[0].gold;
-                gold = gold + prior_gold;
-
-                connection.query(sql_gold, [gold, name], function(err, data){
-                    if(err) { console.error(err); throw err; }
-                    connection.query(sql_map, ["ruin", name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        res.redirect('/adventure');
-                    });
-                });
-            });
-        });        
-    }); 
-    }else{
-        res.redirect('/login');
-    }
-});
-
-
-function getRandomInt(min, max) { //min ~ max 사이의 임의의 정수 반환
-    return Math.floor(Math.random() * (max - min)) + min;
-}

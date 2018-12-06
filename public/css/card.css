@@ -27,6 +27,11 @@
     border-radius: 6px;
 }
 
+.type-category .type .clicked {
+    background-color: #286090;
+    border-color: #204d74;
+}
+
 .type-category {
     text-align: center;
     padding: 10px;

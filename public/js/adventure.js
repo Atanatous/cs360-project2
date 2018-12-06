@@ -8,7 +8,9 @@ var left_mountain = document.getElementById("left_mountain");
 var grassland = document.getElementById("grassland");
 var ruin = document.getElementById("ruin");
 
-var margin_left=0, margin_top=0;
+
+var margin_left=300;
+var margin_top=80;
 
 city.addEventListener("mousemove", returnToMap);
 desert.addEventListener("mousemove", returnToMap);
@@ -19,43 +21,44 @@ grassland.addEventListener("mousemove", returnToMap);
 ruin.addEventListener("mousemove", returnToMap);
 
 function showComponents(event) {
-    if (check(405, 500, 620, 600, event))
+    if (check(540, 660, 820, 815, event))
         city.style.visibility = "visible";
-    else if (check(400, 380, 660, 480, event))
+    else if (check(520, 500, 890, 645, event))
         desert.style.visibility = "visible";
-    else if (check(450, 220, 580, 310, event))
-        temple.style.visibility = "visible";
-    else if (check(690, 180, 860, 300, event))
-        right_mountain.style.visibility = "visible";
-    else if (check(120, 120, 310, 275, event))
-        left_mountain.style.visibility = "visible";
-    else if (check(720, 380, 970, 600, event))
-        grassland.style.visibility = "visible";
-    else if (check(420, 130, 570, 190, event))
+    else if (check(550, 170, 750, 240, event))
         ruin.style.visibility = "visible";
-};
+    else if (check(900, 250, 1180, 420, event))
+        right_mountain.style.visibility = "visible";
+    else if (check(120, 160, 440, 400, event))
+        left_mountain.style.visibility = "visible";
+    else if (check(950, 520, 1280, 820, event))
+        grassland.style.visibility = "visible";
+    else if (check(520, 270, 830, 460, event))
+        temple.style.visibility = "visible";
+    
+    console.log(event.clientX, event.clientY);
+}
 
 function returnToMap(event) {
-    var city = document.getElementById("city");
-    if (!(check(405, 500, 620, 600, event)))
+    if (!(check(540, 660, 820, 815, event)))
         city.style.visibility = "hidden";
-    if (!(check(400, 380, 660, 480, event)))
+    if (!(check(520, 500, 890, 645, event)))
         desert.style.visibility = "hidden";
-    if (!(check(450, 220, 580, 310, event)))
-        temple.style.visibility = "hidden";
-    if (!(check(690, 180, 860, 300, event)))
-        right_mountain.style.visibility = "hidden";
-    if (!(check(120, 120, 310, 275, event)))
-        left_mountain.style.visibility = "hidden";
-    if (!(check(720, 380, 970, 600, event)))
-        grassland.style.visibility = "hidden";
-    if (!(check(420, 130, 570, 190, event)))
+    if (!(check(550, 170, 750, 240, event)))
         ruin.style.visibility = "hidden";
+    if (!(check(900, 250, 1180, 420, event)))
+        right_mountain.style.visibility = "hidden";
+    if (!(check(120, 160, 440, 400, event)))
+        left_mountain.style.visibility = "hidden";
+    if (!(check(950, 520, 1280, 820, event)))
+        grassland.style.visibility = "hidden";
+    if (!(check(520, 270, 830, 460, event)))
+        temple.style.visibility ="hidden";
 }
 
 function check(startX, startY, endX, endY, event) {
-    var posX = event.clientX + margin_left;
-    var posY = event.clientY + margin_top;
+    var posX = event.clientX;
+    var posY = event.clientY;
     startX = startX + margin_left;
     startY = startY + margin_top;
     endX = endX + margin_left;
