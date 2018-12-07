@@ -9,8 +9,7 @@
 }
 
 .gold_container {
-    padding-top: 3%;
-    padding-bottom: 5%;
+    padding-bottom: 2%;
     margin-left: 10px;
 }
 
@@ -23,9 +22,6 @@
 }
 
 div.gold{
-    margin-left: 5px;
-    margin-top: 15px;
-    margin-bottom: 15px;
     font-weight: 800;
     font-size: 30px;
 }
@@ -118,6 +114,8 @@ div.card:hover {
         position: relative;
         text-transform: uppercase;
         font-weight: 700;
+        margin-right: 50px;
+        margin-top: 20px;
     }
     .snip1535:before,
     .snip1535:after {

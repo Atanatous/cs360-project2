@@ -203,7 +203,7 @@ app.get('/shop', function (req, res) {
     var insertQuery = 'INSERT INTO POKEMON(user_id, poke_no, skill1, atk)';
     var insertSubQuery = 'SELECT ';
     insertSubQuery = insertSubQuery + "'" + name + "', ";
-    insertSubQuery = insertSubQuery + 'P.poke_no, S.skill_name, S.atk FROM POKEBOOK P, SKILLS S WHERE P.first_type=S.type OR P.second_type=S.type ORDER BY RAND() LIMIT 1';
+    insertSubQuery = insertSubQuery + 'P.poke_no, S.skill_name, S.atk + 50 FROM POKEBOOK P, SKILLS S WHERE P.first_type=S.type OR P.second_type=S.type ORDER BY RAND() LIMIT 1';
     
     var FinalQuery = insertQuery + insertSubQuery;
     
@@ -300,13 +300,17 @@ app.post('/adventure/ruin', adv_component_listener);
 app.get('/ranking', function(req, res){
     var sess = req.session;
     var name = sess.name;
-    connection.query('SELECT nickname, gold FROM TRAINER ORDER BY gold DESC', function(err, data, fields){
-        if(err) { console.error(err); throw err; }
-        res.render("ranking", {
-            data : data,
-            length : data.length,
-            name : sess.nickname
+    if (name)
+    {
+        connection.query('SELECT nickname, gold FROM TRAINER ORDER BY gold DESC', function(err, data, fields){
+            if(err) { console.error(err); throw err; }
+            res.render("ranking", {
+                data : data,
+                length : data.length,
+                name : sess.nickname
+            });
         });
-    });
+    } 
+    else { res.redirect('/login'); }
      
 });

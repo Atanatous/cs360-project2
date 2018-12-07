@@ -38,21 +38,25 @@ CREATE TABLE IF NOT EXISTS POKEBOOK (
     PRIMARY KEY (poke_no)
 );
 
-CREATE TABLE IF NOT EXISTS POKEMON (
-    user_id     VARCHAR(32) NOT NULL,
-    poke_no     MEDIUMINT   NOT NULL,
-    skill1      VARCHAR(20) NOT NULL,
-    skill2      VARCHAR(20),
-    atk         INT,
-    FOREIGN KEY (user_id) REFERENCES TRAINER(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (poke_no) REFERENCES POKEBOOK(poke_no)
-);
-
 CREATE TABLE IF NOT EXISTS SKILLS (
     skill_name  VARCHAR(20) NOT NULL,
     type        VARCHAR(20) NOT NULL,
     atk         INT         NOT NULL,
     PRIMARY KEY (skill_name)
+);
+
+CREATE TABLE IF NOT EXISTS POKEMON (
+    poke_uid    MEDIUMINT   NOT NULL AUTO_INCREMENT,
+    user_id     VARCHAR(32) NOT NULL,
+    poke_no     MEDIUMINT   NOT NULL,
+    skill1      VARCHAR(20) NOT NULL,
+    skill2      VARCHAR(20) DEFAULT "몸통박치기",
+    atk         INT,
+    PRIMARY KEY (poke_uid),
+    FOREIGN KEY (user_id) REFERENCES TRAINER(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (poke_no) REFERENCES POKEBOOK(poke_no),
+    FOREIGN KEY (skill1)  REFERENCES SKILLS(skill_name),
+    FOREIGN KEY (skill2)  REFERENCES SKILLS(skill_name)
 );
 
 DELIMITER //
@@ -69,7 +73,7 @@ BEGIN
     SELECT poke_no, first_type, second_type INTO pokeNO, type1, type2 from POKEBOOK ORDER BY RAND() LIMIT 1;
     SELECT skill_name, atk INTO skill, attack from SKILLS where type=type1 or type=type2 LIMIT 1;
     
-    INSERT INTO POKEMON(user_id, poke_no, skill1, atk) VALUES (NEW.user_id, pokeNo, skill, attack);
+    INSERT INTO POKEMON(user_id, poke_no, skill1, atk) VALUES (NEW.user_id, pokeNo, skill, attack + 50);
 END //
 DELIMITER ;
     

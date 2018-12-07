@@ -46,3 +46,7 @@ header img {
 .menu a:hover {
     color: skyblue;
 }
+
+::-webkit-scrollbar { 
+    display: none; 
+}
