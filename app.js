@@ -2,7 +2,7 @@
 var express = require('express');
 var session = require('express-session');
 var app = express();
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 var mysql = require('mysql'); // MySQL module on node.js
 
 var server = require('http').createServer(app);
@@ -57,12 +57,12 @@ app.get('/', function (req, res) {
     var sess;
     sess = req.session;
 
-    var query = connection.query ('select * from pokemon', function (err, rows) {
+    var query = connection.query ('select * from POKEBOOK', function (err, rows) {
         if (err) { console.error (err); throw err; }
         res.render ('index', {
             data: rows,
             length: rows.length,
-            name : sess.name
+            name : sess.nickname
         });
     });
 });
@@ -74,38 +74,47 @@ app.get('/login', function (req, res) {
 
     res.render ('login', {
         name: sess.name
-    })
+    });
 });
 
 // mypage  & its function
 app.get('/mypage', function (req, res) {
     var sess = req.session;
     var name = sess.name;
-    var queryState = "SELECT P.img_path, P.name, Possess.atk, T.gold FROM Pokemon P, Trainer T, POSSESS WHERE T.user_id = Possess.user_id AND Possess.poke_no = P.poke_no AND T.user_id = ?";
-    var aggregateSQL = "SELECT AVG(atk) AS avgAtk FROM POSSESS WHERE user_id = ?";
+    
+    if (name) {
+        var queryState = "SELECT P.img_path, P.name, POKEMON.atk, T.gold FROM POKEBOOK P, Trainer T, POKEMON WHERE T.user_id = POKEMON.user_id AND POKEMON.poke_no = P.poke_no AND T.user_id = ?";
+        var aggregateSQL = "SELECT AVG(atk) AS avgAtk, COUNT(*) AS cnt FROM POKEMON WHERE user_id = ?";
 
-    var query = connection.query (queryState, name, function (err, myInfo) {
-        if (err) { console.error (err); throw err; }
+        var query = connection.query (queryState, name, function (err, myInfo) {
+            if (err) { console.error (err); throw err; }
 
-        // aggregation query. To show average attak of pokemons.
-        connection.query (aggregateSQL, [name], function (err, average) {
-            res.render ('mypage', {
-                name: sess.name,
-                gold: myInfo[0].gold,
-                myPokemons: myInfo,
-                length: myInfo.length,
-                avgAtk: average[0].avgAtk
+            // aggregation query. To show average attak of POKEBOOKs.
+            connection.query (aggregateSQL, [name], function (err, average) {
+                res.render ('mypage', {
+                    name: sess.nickname,
+                    gold: myInfo[0].gold,
+                    myPokemons: myInfo,
+                    length: myInfo.length,
+                    avgAtk: average[0].avgAtk,
+                    count: average[0].cnt
+                });
             });
         });
-    });
+    } 
+    else { res.redirect('/login'); }
+    
 });
 
-app.get ('/mypage/edit', function (req, res) {
+app.get('/mypage/delete', function(req, res){
     var sess = req.session;
-    
-    res.render ('mypage-edit', {
-        name: sess.name
-    });
+    var name = sess.name;
+    connection.query('DELETE FROM TRAINER WHERE user_id=?', [name], function(err, data, fields){
+        if(err) { console.error(err); throw err; }
+        sess.destroy(function(err){
+            res.redirect('/');
+        });
+    }); 
 });
 
 app.get('/api/logout', function(req, res){
@@ -121,7 +130,7 @@ app.get('/register', function (req, res) {
 
 app.post ('/api/search', function (req, res) {
     var sess = req.session;
-    var queryState = 'select * from pokemon ';
+    var queryState = 'select * from POKEBOOK ';
     
     condition = '"%' + req.body.search_data.trim() + '%"';
     queryState = queryState + 'where name like ' + condition;
@@ -136,7 +145,7 @@ app.post ('/api/search', function (req, res) {
         res.render ('index', {
             data: rows,
             length: rows.length,
-            name: sess.name
+            name: sess.nickname
         });
     });
 });
@@ -171,6 +180,7 @@ app.post('/api/login', function(req, res, next){
 
             if (password==decryptedString){
                 req.session.name = name;
+                req.session.nickname = results[0]["nickname"];
                 res.redirect('/');
             }
             else{
@@ -184,39 +194,16 @@ app.post('/api/login', function(req, res, next){
     });
 });
 
-app.get('/skills', function (req, res) {
-    var query = connection.query ('select * from skills', function (err, rows) {
-        if (err) { console.error (err); throw err; }
-        res.render ('skill_index', {
-            rows: rows
-        });
-    });
-});
-
-app.post('/api/mypage', function(req,res){
-    var sql = 'UPDATE TRAINER SET nickname=?, user_pw=? WHERE user_id=?';
-    var encryptedString = cryptr.encrypt(req.body.password);
-    var params = [req.body.nickname, encryptedString, req.session.name];
-
-    connection.query(sql, params, function(err, rows, fields) {
-        if(err){ console.error(err); throw (err); }
-        console.log(rows);
-        req.session.destroy(function(err) {
-            res.redirect('/');
-        });
-    });
-});
-
 app.get('/shop', function (req, res) {
     var sess = req.session;
     var name = sess.name;
     var getGoldQuery = 'SELECT gold FROM TRAINER WHERE user_id=?';
     var updateGoldQuery = 'UPDATE TRAINER SET gold=? WHERE user_id=?';
  
-    var insertQuery = 'INSERT INTO POSSESS(user_id, poke_no, skill1, atk)';
+    var insertQuery = 'INSERT INTO POKEMON(user_id, poke_no, skill1, atk)';
     var insertSubQuery = 'SELECT ';
     insertSubQuery = insertSubQuery + "'" + name + "', ";
-    insertSubQuery = insertSubQuery + 'P.poke_no, S.skill_name, S.atk FROM POKEMON P, SKILLS S WHERE P.first_type=S.type OR P.second_type=S.type ORDER BY RAND() LIMIT 1';
+    insertSubQuery = insertSubQuery + 'P.poke_no, S.skill_name, S.atk FROM POKEBOOK P, SKILLS S WHERE P.first_type=S.type OR P.second_type=S.type ORDER BY RAND() LIMIT 1';
     
     var FinalQuery = insertQuery + insertSubQuery;
     
@@ -228,8 +215,7 @@ app.get('/shop', function (req, res) {
 
             if (gold <= 100)
             {
-                // TODO: 돈 없을 시 확인창 띄우기로 변경.
-                res.redirect('/adventure');
+                res.send('<script type="text/javascript"> alert("돈이 없습니다! 탐험을 하세요!"); history.go(-1); </script>');
             }
             else
             {
@@ -248,17 +234,26 @@ app.get('/shop', function (req, res) {
 });
 
 app.get('/adventure', function(req, res){
-    var sess;
-    sess = req.session;
+    var sess = req.session;
+    var name = sess.name;
 
-    var query = connection.query ('select * from pokemon', function (err, rows) {
-        if (err) { console.error (err); throw err; }
-        res.render ('adventure', {
-            data: rows,
-            length: rows.length,
-            name : sess.name
+    if (name)
+    {
+        var query = connection.query ('select * from trainer where user_id=?', [name], function (err, rows) {
+            if (err) { console.error (err); throw err; }
+            var current_time = new Date();
+        
+            if (rows[0].map != null && rows[0].end_time > current_time) {
+                res.render('adventure_alert');
+            } 
+            else {
+                res.render ('adventure', {
+                name : sess.nickname
+                });
+            }
         });
-    });
+    } 
+    else { res.redirect('/login'); }
 });
 
 // listener which applied to each component in adventure page.
@@ -270,155 +265,48 @@ var adv_component_listener = function(req, res)
     var component = urlComponent[urlComponent.length - 1];
 
     if (name) {
-        connection.query('SELECT * FROM POSSESS WHERE user_id = ?', [name], function (err, myInfo) {
+        connection.query('SELECT * FROM MAPS WHERE map_name = ?', [component], function(err, info){
             if(err) { console.error(err); throw err; }
+            var gold = info[0].gold;
+            var time = info[0].time;
+            var current_time = new Date();
+            var end_time = new Date(current_time.getTime() + time * 1000);
 
-            pokemonNum = myInfo.length;
-            randNum = getRandomInt(0, myInfo.length-1);
-            name = myInfo[randNum].user_id;
+            var updateQuery = 'UPDATE TRAINER SET gold=?, map=?, end_time=? WHERE user_id=?';
 
-            connection.query('SELECT * FROM MAPS WHERE map_name = ?', [component], function(err, info){
+            connection.query('SELECT * FROM TRAINER WHERE user_id=?', [name], function(err, data){
                 if(err) { console.error(err); throw err; }
-                console.log(info);
-                gold = info[0].gold;
-                sql_gold = 'UPDATE TRAINER SET gold=? WHERE user_id=?';
-                sql_map = 'UPDATE POSSESS SET map=? WHERE user_id=?';
+                prior_gold = data[0].gold;
+                gold = gold + prior_gold;
 
-                connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function(err, data){
+                connection.query(updateQuery, [gold, component, end_time, name], function(err, data) {
                     if(err) { console.error(err); throw err; }
-                    prior_gold = data[0].gold;
-                    gold = gold + prior_gold;
-
-                    connection.query(sql_gold, [gold, name], function(err, data){
-                        if(err) { console.error(err); throw err; }
-                        connection.query(sql_map, ["city", name], function(err, data){
-                            if(err) { console.error(err); throw err; }
-                            res.redirect('/adventure');
-                        });
-                    });
+                    res.redirect('/mypage');
                 });
-            });        
-        }); 
+            });
+        });        
     } 
     else { res.redirect('/login'); }
-}
+};
 
-app.get('/adventure/city', adv_component_listener);
-app.get('/adventure/desert', adv_component_listener);
-app.get('/adventure/right_mountain', adv_component_listener);
-app.get('/adventure/left_mountain', adv_component_listener);
-app.get('/adventure/temple', adv_component_listener);
-app.get('/adventure/grassland', adv_component_listener);
-app.get('/adventure/ruin', adv_component_listener);
+app.post('/adventure/city', adv_component_listener);
+app.post('/adventure/desert', adv_component_listener);
+app.post('/adventure/right_mountain', adv_component_listener);
+app.post('/adventure/left_mountain', adv_component_listener);
+app.post('/adventure/temple', adv_component_listener);
+app.post('/adventure/grassland', adv_component_listener);
+app.post('/adventure/ruin', adv_component_listener);
 
-
-/************************
-    PlayGround Functions
-*************************/
-
-function getRandomInt(min, max) { //min ~ max 사이의 임의의 정수 반환
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-
-app.post('/wrongAlert', function(req, res, next){
-    res.send('<script type="text/javascript">alert("없는 아이디이거나 틀린 비밀번호입니다.");</script>');
-});
-
-
-var playerList = {};
-
-app.get('/play', function(req, res){
+app.get('/ranking', function(req, res){
     var sess = req.session;
-    name = sess.name;
-    if(name){
-        connection.query('SELECT * FROM TRAINER WHERE user_id = ?', [name], function (error, results, fields) {
-            console.log("In play user's nickname :" + results[0].nickname);
-            sess.nickname = results[0].nickname;
-            res.render('play', {
-                nickname : sess.nickname,
-                name : sess.name
-            });
+    var name = sess.name;
+    connection.query('SELECT nickname, gold FROM TRAINER ORDER BY gold DESC', function(err, data, fields){
+        if(err) { console.error(err); throw err; }
+        res.render("ranking", {
+            data : data,
+            length : data.length,
+            name : sess.nickname
         });
-    }else{
-        res.redirect('/login');
-    }
-});
-
-io.on('connection', function(socket){
-    socket.on('nameCheck', function(name){
-        console.log("nameCheck IN");
-        function chkNameDuplicated(name){
-          for(var p in playerList)
-            if(playerList[p].name == name)
-              return false;
-          return false;
-    }
-    if(chkNameDuplicated(name)){
-      console.log("Name "+name+" duplicate");
-      socket.emit('loginFail', null);
-      return;
-    }
-    console.log("To loginSuccess server");
-    socket.emit('loginSuccess', name);
-  });
-
-  socket.on('login', function(data){
-    console.log("Client logged-in:\n name:"+data.name+"\n socket id: "+socket.id);
-
-    socket.name = data.name;
-    socket.broadcast.emit('anotherUser', data);
-
-    for(var socketid in playerList){
-      var playerData = playerList[socketid];
-      console.log("user already exists : "+playerData.name);
-      socket.emit('anotherUser', playerData);
-    }
-    playerList[socket.id] = data;
-  });
-
-  socket.on('move', function(data){
-    socket.broadcast.emit('move', data);
-  });
-
-  socket.on('chat', function (data) {
-    console.log('Messsage from '+ data.name+' : '+data.chat);
-    socket.broadcast.emit('chat', data);
-  });
-  socket.on('msg', function(data){
-    console.log('Message from '+ data.from + " to " + data.to +" "+ data.chat);
-    let flag = true;
-    for(var socketid in playerList){
-      var playerData = playerList[socketid];
-      if(playerData.name == data.to){
-        flag = false;
-        io.to(socketid).emit('msg', data);
-      }
-    }
-    if(flag){
-      socket.emit('noUser', data);
-      console.log('There is no '+ data.to);
-    }
-  });
-
-  socket.on('forceDisconnect', function () {
-    socket.disconnect();
-  });
-
-  socket.on('disconnect', function () {
-    console.log('user disconnected: '+socket.name);
-    delete playerList[socket.id];
-    io.emit('logout', socket.name);
-  });
-});
-
-app.get('/play/mypage', function(req, res){
-    res.redirect('/');
-});
-
-app.get('/play/return', function(req,res){
-    res.redirect('/');
-});
-
-app.get('/play/logout', function(req,res){
-    res.redirect('/api/logout');
+    });
+     
 });

@@ -1,7 +1,7 @@
 USE cs360_team10;
 
 LOAD DATA LOCAL INFILE "C:/Users/chldl/Desktop/cs360-project2/PokeDB.csv"
-INTO TABLE POKEMON
+INTO TABLE POKEBOOK
 FIELDS TERMINATED BY ","
 IGNORE 1 LINES;
 
@@ -9,10 +9,10 @@ LOAD DATA LOCAL INFILE "C:/Users/chldl/Desktop/cs360-project2/PokeSkillDB.csv" I
 FIELDS TERMINATED BY ',';
 
 
-INSERT INTO MAPS (map_name, type, gold, exp) VALUES ("city", "city", 100, 50);
-INSERT INTO MAPS (map_name, type, gold, exp) VALUES ("desert", "desert", 100, 50);
-INSERT INTO MAPS (map_name, type, gold, exp) VALUES ("right_mountain", "right_mountain", 100, 50);
-INSERT INTO MAPS (map_name, type, gold, exp) VALUES ("left_mountain", "left_mountain", 100, 50);
-INSERT INTO MAPS (map_name, type, gold, exp) VALUES ("temple", "temple", 100, 50);
-INSERT INTO MAPS (map_name, type, gold, exp) VALUES ("grassland", "grassland", 100, 50);
-INSERT INTO MAPS (map_name, type, gold, exp) VALUES ("ruin", "ruin", 100, 50);
+INSERT INTO MAPS (map_name, gold, time) VALUES ("city", 100, 5);
+INSERT INTO MAPS (map_name, gold, time) VALUES ("desert", 150, 10);
+INSERT INTO MAPS (map_name, gold, time) VALUES ("right_mountain", 200, 20);
+INSERT INTO MAPS (map_name, gold, time) VALUES ("left_mountain", 200, 20);
+INSERT INTO MAPS (map_name, gold, time) VALUES ("temple", 250, 25);
+INSERT INTO MAPS (map_name, gold, time) VALUES ("grassland", 300, 30);
+INSERT INTO MAPS (map_name, gold, time) VALUES ("ruin", 600, 60);

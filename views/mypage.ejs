@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/mypage.css">
+    <link rel="stylesheet" href="/css/mypage.css"> 
+    <link rel="stylesheet" href="/css/modal.css">
     <title>CS360 Team#10</title>
 </head>
 
@@ -13,10 +14,9 @@
           <a href="/"><img src="/res/logo.png" width="150"></a>
           <nav>
             <ul class="menu">
-                <li><a href="/play/return"> 도감 </a></li>
-                <li><a href="/play"> 놀이방 </a></li>
+                <li><a href="/"> 도감 </a></li>
+                <li><a href="/ranking"> 랭킹 </a><li>
                 <li><a href="/adventure"> 탐험 </a></li>
-                <li><a href="/shop"> 상점 </a></li>
                     <li>
                         <% if (name) { %>
                             <a href="/mypage" > <%= name %> </a>
@@ -38,11 +38,16 @@
     <div class = "gold_container">
       <div class = "gold">
           <p> <%= gold %> Gold </p>
+          <button class="snip1535" onClick="javascript:location.href='/shop';">Purchase Random Pokemon</button>
+          <button class="snip1535" id="unregister">Close your account?</button>
       </div>
     </div>
 
     <div class="card-container">
-        <div class = "title"> <h2> 내 포켓몬 </h2> 평균 공격력 : <%= avgAtk %> </div>
+        <div class = "title"> 
+            <h2> 내 포켓몬 </h2> 
+            총 : <%= count %>마리 / 평균 공격력 : <%= avgAtk %> 
+        </div>
         <ul>
             <% for (var i=0; i < length; i++) { %>
             <li>   
@@ -69,7 +74,47 @@
     </div>
   </div>
 
+  <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <p> 계정을 삭제하시겠습니까? 한 번 삭제한 계정은 되돌릴 수 없습니다. </p>
+            <div class="button-wrapper">
+                <button id="confirm"> 예 </button>
+                <button id="close"> 아니오 </button>
+            </div>
+        </div>
+    </div>
 
+    <script type="text/javascript">
+        var deleteBtn = document.getElementById("unregister");
+        var myModal = document.getElementById("myModal");
+        var okBtn = document.getElementById("confirm");
+        var closeBtn = document.getElementById("close");
 
+        deleteBtn.onclick = function () {
+            myModal.style.display = "block";
+        }
+
+        closeBtn.onclick = function () {
+            myModal.style.display = "none";
+        }
+
+        okBtn.onclick = function () {
+            var form = document.createElement("form");
+
+            form.setAttribute("method", "get");
+            form.setAttribute("action", "/mypage/delete");
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        window.onclick = function(event) {
+            if (event.target == myModal) {
+                myModal.style.display = "none";
+            }
+        }
+    </script>   
 </body>
+
 </html>

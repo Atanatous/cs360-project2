@@ -1,0 +1,38 @@
+@font-face {
+    font-family: "NanumGothicBold";
+    src:url("../fonts/NanumGothicBold.ttf");
+}
+
+table.rank_table {
+    border-collapse: collapse;
+    text-align: left;
+    line-height: 1.5;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin: 0 auto;
+    margin-top: 120px;
+    text-align: center;
+}
+table.rank_table thead th {
+    width: 150px;
+    padding: 10px;
+    font-weight: bold;
+    vertical-align: top;
+    color: #000;
+    font-weight: 800; 
+    background: #FFCC33;
+    margin: 20px 10px;
+}
+table.rank_table tbody th {
+    width: 150px;
+    padding: 10px;
+}
+table.rank_table td {
+    width: 350px;
+    padding: 10px;
+    vertical-align: top;
+}
+
+table.rank_table .even {
+    background: rgb(255, 250, 223)
+}

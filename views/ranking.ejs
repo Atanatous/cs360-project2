@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <title> CS360 Team#10 </title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/card.css">
+    <link rel="stylesheet" href="/css/ranking.css">    
+</head>
+
+<body>
+	<header>
+      <div class="wrapper">
+          <a href="/"><img src="/res/logo.png" width="150"></a>
+          <nav>
+              <ul class="menu">
+                  <li><a href="/"> 도감 </a></li>
+                  <li><a href="/ranking"> 랭킹 </a><li>
+                  <li><a href="/adventure"> 탐험 </a></li>
+                  <li>
+                        <% if (name) { %>
+                            <a href="/mypage" > <%= name %> </a>
+                        <% } else { %>
+                            <a href="/login" > 로그인 </a>
+                        <% } %>                    
+                    </li>
+                    <li><a href="/api/logout"> 
+                        <% if(name){ %> 로그아웃 <% }
+                        else{ %><% } %>             
+                    </a></li>
+              </ul>
+          </nav>
+     </div>
+    </header>
+
+    <table class="rank_table">
+    <thead>
+    <tr>
+        <th scope="cols">순위</th>
+        <th scope="cols">닉네임</th>
+        <th scope="cols"> 골드 보유량</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <% for (var i=0; i < length; i++) { %>
+        <tr>
+            <% if (i % 2 != 0) { %>
+                <th scope="row" class="even"> <%= i+1 %> </th>
+                <td class="even"> <%= data[i]['nickname'] %> </td>
+                <td class="even"> <%= data[i]['gold'] %> </td>
+            <% } else { %>
+                <th scope="row"> <%= i+1 %> </th>
+                <td> <%= data[i]['nickname'] %> </td>
+                <td> <%= data[i]['gold'] %> </td>     
+        </tr>
+            <% } %>
+        <% } %>
+    </tbody>
+</table>
+    
+</body>
+</html>

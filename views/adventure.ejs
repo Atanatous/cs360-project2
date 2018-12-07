@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/card.css">
     <link rel="stylesheet" href="/css/adventure.css">    
+    <link rel="stylesheet" href="/css/modal.css">
 </head>
 
 <body class="align">
@@ -15,9 +16,8 @@
             <nav>
                 <ul class="menu">
                     <li><a href="/"> 도감 </a></li>
-                    <li><a href="/play"> 놀이방 </a></li>
+                    <li><a href="/ranking"> 랭킹 </a><li>
                     <li><a href="/adventure"> 탐험 </a></li>
-                    <li><a href="/shop"> 상점 </a></li>
                     <li>
                         <% if (name) { %>
                             <a href="/mypage" > <%= name %> </a>
@@ -50,25 +50,46 @@
     </div>
 
     <div class="png-adventure">
-        <img id="city" src="/maps/도시.png" onClick="javascript:location.href='/adventure/city';">
+        <img id="city" src="/maps/도시.png" >
     </div>
     <div class="png-adventure">
-        <img id="desert" src="/maps/사막.png" onClick="javascript:location.href='/adventure/desert';">
+        <img id="desert" src="/maps/사막.png" >
     </div>
     <div class="png-adventure">
-        <img id="temple" src="/maps/신전.png" onClick="javascript:location.href='/adventure/temple';">
+        <img id="temple" src="/maps/신전.png">
     </div>
     <div class="png-adventure">
-        <img id="right_mountain" src="/maps/오른쪽산.png" onClick="javascript:location.href='/adventure/right_mountain';">
+        <img id="right_mountain" src="/maps/오른쪽산.png" >
     </div>
     <div class="png-adventure">
-        <img id="left_mountain" src="/maps/왼쪽산.png" onClick="javascript:location.href='/adventure/left_mountain';">
+        <img id="left_mountain" src="/maps/왼쪽산.png" >
     </div>
     <div class="png-adventure">
-        <img id="grassland" src="/maps/초원.png" onClick="javascript:location.href='/adventure/grassland';">
+        <img id="grassland" src="/maps/초원.png" >
     </div>
     <div class="png-adventure">
-        <img id="ruin" src="/maps/고대유적.png" onClick="javascript:location.href='/adventure/ruin';">
+        <img id="ruin" src="/maps/고대유적.png" >
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="reward">
+                <p id="time"> 소요 시간 :  </p>
+                <p id="gold"> 예상 획득 금화 : </p>
+            </div>
+            <div class="explanation">
+                <p> 해당 지역으로 모험을 떠나시겠습니까? </p>
+                <p> 한 번 떠나면, 정해진 시간이 지나기 전까지는 탐험 맵에 돌아오실 수 없습니다. </p>
+                <p> 탐험 보수는 선입금됩니다. 마음껏 포켓몬을 구입하세요! </p>
+                <h4> * "떠난다"를 클릭할 시 상점 페이지로 이동합니다. </h4>
+            </div>
+            <div class="button-wrapper">
+                <button id="confirm"> 떠난다 </button>
+                <button id="close"> 돌아가기 </button>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript" src='/js/adventure.js'></script>
